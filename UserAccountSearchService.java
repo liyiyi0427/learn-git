@@ -1607,6 +1607,9 @@ public class UserAccountSearchService {
         return this.userAccountMapper.queryBidAlreayGathering(pageVo);
     }
 
+	public Object test(){
+		return "测试创建新分支 merger到master";
+	}
 
 
 }
