@@ -1,0 +1,1673 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.hexin.mapper.hexin6.UserAccountMapper">
+	<resultMap id="AccountMap" type="com.hexin.domain.hexin6.Account">
+		<id column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="total_money" property="totalMoney" jdbcType="DECIMAL" />
+		<result column="recharge_money" property="rechargeMoney"
+			jdbcType="DECIMAL" />
+		<result column="income_money" property="incomeMoney" jdbcType="DECIMAL" />
+		<result column="principal_money" property="principalMoney"
+			jdbcType="DECIMAL" />
+		<result column="repayment_money" property="repaymentMoney"
+			jdbcType="DECIMAL" />
+		<result column="loan_money" property="loanMoney" jdbcType="DECIMAL" />
+		<result column="loan_netvalue" property="loanNetvalue"
+			jdbcType="DECIMAL" />
+		<result column="freeze_for_invest" property="freezeForInvest"
+			jdbcType="DECIMAL" />
+		<result column="freeze_for_cash" property="freezeForCash"
+			jdbcType="DECIMAL" />
+		<result column="decimal_money" property="decimalMoney"
+				jdbcType="DECIMAL" />
+		<result column="type" property="type" jdbcType="TINYINT" />
+		<result column="user_id_num" property="userIdNum" jdbcType="INTEGER" />
+	</resultMap>
+	<!--查询用户帐号操作 -->
+	<select id="searchUserAccount" parameterType="java.lang.Long"
+		resultMap="AccountMap">
+		select * from Account where
+		user_id_num=#{userIdNum,jdbcType=INTEGER}
+	</select>
+	<select id="searchUserFinancePackage" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		select 
+			IFNULL(sum(fa.repay_principal),0) as packagePrincipal,
+			IFNULL(sum(fa.repay_interest),0) as packageInterest
+			from finance_account fa
+		inner JOIN finance_package fp on
+			fa.package_id=fp.id
+		left join finance_urgent_quit fuq on fa.id=fuq.finance_account_id and fuq.quit_state!=0
+		where fa.user_id_num = #{userIdNum,jdbcType=INTEGER} and fp.state in(25,30) and  if(fuq.finance_account_id is  null ,'1=1',fuq.cashed_state =0 and fuq.quit_state in(1,2)) 
+		group by fa.user_id_num
+	</select>
+
+	<select id="searchUserBidAccount" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		select
+		ROUND(IFNULL(SUM(b.remain_interest*a.quota/100/b.money),0),2) as remainInterest,
+		ROUND(IFNULL(SUM(b.remain_principal*a.quota/100/b.money),0),2) as remainPrincipal
+		from Asset a
+		INNER JOIN BidDocument b on b.bid_id =
+		a.bid_id and a.state =0 and b.for_package=0
+		<!--INNER JOIN Repayplan r on-->
+		<!--r.bid_id = a.bid_id-->
+		where a.user_id_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		<!--and r.repay_type = 0-->
+		<!--and r.state = 0-->
+		and b.for_package=0
+		group by a.user_id_num
+	</select>
+
+	<select id="searchDeliveredIncome" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		select IFNULL(sum(fund),0)  AS deliveredIncome
+		from FundIO 
+		where  reason in (8, 9, 10, 11, 29, 30, 31, 32, 33, 34, 35, 37, 45, 60, 61, 70,76, 81,  110) AND
+		to_account_num=#{userIdNum,jdbcType=INTEGER}
+	</select>
+	<select id="searchForSale" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		SELECT
+		IFNULL(sum(AssetSale.price),0) AS 'price_sum'
+		FROM
+		AssetSale
+		LEFT JOIN Asset as temp_aasset_info ON
+		temp_aasset_info.asset_id = AssetSale.asset_id
+		JOIN BidDocument ON
+		temp_aasset_info.bid_id = BidDocument.bid_id
+		where
+		temp_aasset_info.user_id_num = #{userIdNum,jdbcType=INTEGER}
+		AND
+		temp_aasset_info.state = 1
+		AND temp_aasset_info.fn_is_package = 0
+	</select>
+
+
+	<!--查询转让中金额-->
+	<select id="searchFreezeMoney" resultType="map" parameterType="com.hexin.model.PageVo">
+		SELECT freeze_for_cash,freeze_for_invest  FROM Account
+		<where>
+			<if test = "pageVo.parameters!=null">
+				<if test="pageVo.parameters.user_id != null" >
+					AND user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<select id="searchTransferSale" parameterType="com.hexin.model.PageVo" resultType="map">
+		SELECT
+		Asset.user_id_num as userId,
+		IFNULL(sum(AssetSale.price),0) AS 'price_sum'
+		FROM
+		AssetSale
+		LEFT JOIN Asset  ON Asset.asset_id = AssetSale.asset_id
+		where
+		Asset.user_id_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		AND
+		Asset.state = 1
+		AND Asset.fn_is_package = 0
+
+	</select>
+
+	<!--已赚奖励总和  -->
+	<select id="receivedReward" parameterType="com.hexin.model.PageVo" resultType="map">
+		SELECT
+		V_FundIO.uid AS user_id,
+		ROUND(SUM(V_FundIO.fund),2) AS money_amount
+		FROM
+		V_FundIO AS V_FundIO
+		INNER JOIN  Account as Account on Account.user_id_num = V_FundIO.from_user_id_num
+		where
+		V_FundIO.reason in (9,29,30,32,33,34,35,37,50,60,70,81,110,61,63)
+			<if test="pageVo!=null">
+				<if test = "pageVo.parameters!=null">
+					<if test="pageVo.parameters.user_id != null" >
+						AND V_FundIO.uid = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+					</if>
+				</if>
+			</if>
+		order by V_FundIO.id desc
+	</select>
+
+	<select id="earnIncome" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		select IFNULL(sum(fund),0)  AS nearThreeMonthMoney
+		from FundIO
+		where  reason in (8, 9, 10, 11, 29, 30, 31, 32, 33, 34, 35, 37, 45, 60, 61, 70,76, 81,  110) AND
+		<if test="pageVo!=null">
+			<if test = "pageVo.parameters!=null">
+				<if test="pageVo.parameters.user_id!=null">
+					to_account_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+				</if>
+
+				<if test="pageVo.parameters.startDate!=null">
+					AND ts  <![CDATA[>=]]> #{pageVo.parameters.startDate,jdbcType=TIMESTAMP}
+				</if>
+
+				<if test="pageVo.parameters.endDate!=null">
+					AND ts  <![CDATA[<=]]> #{pageVo.parameters.endDate,jdbcType=TIMESTAMP}
+				</if>
+			</if>
+		</if>
+	</select>
+
+	<select id="sameMoneyIncome"  resultType="java.util.Map" parameterType="com.hexin.model.PageVo">
+		select IFNULL(sum(fund),0)  AS sameMonthMoney
+		from FundIO
+		where  reason in (8, 9, 10, 11, 29, 30, 31, 32, 33, 34, 35, 37, 45, 60, 61, 70,76, 81,  110) AND
+		to_account_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and date_format(ts,'%Y-%m')=date_format(now(),'%Y-%m')
+	</select>
+
+	<select id="addUpIncome" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		select DATE_FORMAT(ts,'%m') as month,ROUND(IFNULL(sum(fund), 0),2) as addUpMoney
+		from FundIO
+		where   reason in (8, 9, 10, 11, 29, 30, 31, 32, 33, 34, 35, 37, 45, 60, 61, 70,76, 81,  110) AND
+		to_account_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		<if test="pageVo!=null">
+			<if test = "pageVo.parameters!=null">
+				<if test="pageVo.parameters.year!=null">
+					and DATE_FORMAT(ts,'%Y')=#{pageVo.parameters.year,jdbcType=INTEGER}
+				</if>
+			</if>
+		</if>
+		group by month
+		order by month
+	</select>
+
+
+	<select id="collectBidMoney" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		select
+		DATE_FORMAT(repayday,'%m') as month,
+		ROUND(IFNULL(sum((r.principal * a.quota/100)/b.money),0),2) as
+		remainPrincipal,
+		ROUND(IFNULL(sum((r.interest*a.quota/100)/b.money),0),2) as
+		remainInterest
+		from Asset a
+		INNER JOIN BidDocument b on b.bid_id =
+		a.bid_id and a.state in(0,1)
+		and b.for_package=0
+		INNER JOIN Repayplan r on
+		r.bid_id = a.bid_id
+		where a.user_id_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and r.repay_type = 0
+		and r.state = 0
+		and DATE_FORMAT(repayday,'%Y')=#{pageVo.parameters.year,jdbcType=INTEGER}
+		group by month
+	</select>
+
+	<select id="bidReceivable" resultType="java.util.Map">
+		select
+		DATE_FORMAT(repayday,'%Y-%m-%d') as currentDate,
+		ROUND(IFNULL(sum((r.principal * a.quota/100)/b.money),0),2) as
+		remainPrincipal,
+		ROUND(IFNULL(sum((r.interest*a.quota/100)/b.money),0),2) as
+		remainInterest
+		from Asset a
+		INNER JOIN BidDocument b on b.bid_id =
+		a.bid_id and a.state =0
+		and b.for_package=0
+		INNER JOIN Repayplan r on
+		r.bid_id = a.bid_id
+		where a.user_id_num=#{userIdNum,jdbcType=INTEGER}
+		and r.repay_type = 0
+		and r.state = 0
+		<!--and DATE_FORMAT(repayday,'%Y-%m-%d')=DATE_FORMAT(CURDATE(),'%Y-%m-%d')-->
+		group by a.user_id_num
+	</select>
+
+	<select id="collectPackageMoney" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		select
+		DATE_FORMAT(DATE_ADD(fp.expect_end_time,INTERVAL if(fp.lock_issue is null,fp.issue,fp.lock_issue) MONTH),'%m') as month,
+		ROUND(IFNULL(fa.repay_principal,0),2) as packagePrincipal,
+		ROUND(IFNULL(fa.repay_interest,0),2) as packageInterest,
+		fp.id,
+		fp.issue,
+		fp.lock_issue,
+		fp.rate,fp.version_id
+		from finance_account fa
+		inner JOIN finance_package fp on
+		fa.package_id=fp.id
+		left join finance_urgent_quit fuq on fa.id=fuq.finance_account_id and fuq.quit_state!=0
+		where fa.user_id_num =#{pageVo.parameters.user_id,jdbcType=INTEGER} and fp.state in(25,30) and  if(fuq.finance_account_id is  null ,'1=1',fuq.cashed_state =0 and fuq.quit_state in(1,2)) and DATE_FORMAT(DATE_ADD(fp.expect_end_time,INTERVAL if(fp.lock_issue is null,fp.issue,fp.lock_issue) MONTH),'%Y')=#{pageVo.parameters.year,jdbcType=INTEGER} and fp.package_type!=4
+
+	</select>
+
+	<select id="collectMonthPackageMoney" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		select
+		DATE_FORMAT(DATE_ADD(fp.expect_end_time,INTERVAL if(fp.lock_issue is null,fp.issue,fp.lock_issue) MONTH),'%m') as month,
+		-- 		ROUND(IFNULL(sum(fa.repay_principal),0),2) as packagePrincipal,
+		-- 		ROUND(IFNULL(sum(fa.repay_interest),0),2) as packageInterest
+		fa.repay_interest,
+		fa.repay_principal,
+		fp.package_type,fp.id
+
+		from finance_account fa
+		inner JOIN finance_package fp on
+		fa.package_id=fp.id
+		left join finance_urgent_quit fuq on fa.id=fuq.finance_account_id and fuq.quit_state!=0
+		where fa.user_id_num =#{pageVo.parameters.user_id,jdbcType=INTEGER} and fp.state in(25,30) and  if(fuq.finance_account_id is  null ,'1=1',fuq.cashed_state =0 and fuq.quit_state in(1,2)) and DATE_FORMAT(DATE_ADD(fp.expect_end_time,INTERVAL if(fp.lock_issue is null,fp.issue,fp.lock_issue) MONTH),'%Y')=#{pageVo.parameters.year,jdbcType=INTEGER} and fp.package_type=4
+	</select>
+
+	<select id="incomeExpenses" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		SELECT
+		/*TO_COUNT*/
+		V_FundIO.id AS fund_id,
+		V_FundIO.uid AS user_id,
+		V_FundIO.trans_uid AS trans_user_id,
+		DATE_FORMAT(
+		V_FundIO.ts,
+		"%Y-%m-%d %H:%i:%s"
+		) AS ts_submit,
+		V_FundIO.reason AS money_op,
+		V_FundIO.io AS io,
+		ROUND (V_FundIO.fund, 2) AS money_amount,
+		V_FundIO.res_fund AS account_total,
+		V_FundIO.detail AS detail,
+		V_FundIO.bid_id,
+		V_FundIO.bid_name,
+		V_FundIO.bid_borrower_id
+		FROM
+		V_FundIO AS V_FundIO
+		WHERE
+		V_FundIO.uid = #{pageVo.parameters.user_id,jdbcType=VARCHAR}
+
+		<if test="pageVo!=null">
+			<if test = "pageVo.parameters!=null">
+				<if test="pageVo.parameters.io==null">
+					AND V_FundIO.reason != 100
+					AND V_FundIO.reason != 46
+					AND V_FundIO.reason != 42
+					AND V_FundIO.reason != 95
+
+				</if>
+
+				<if test="pageVo.parameters.startDate!=null">
+					AND V_FundIO.ts  <![CDATA[>=]]> #{pageVo.parameters.startDate,jdbcType=TIMESTAMP}
+				</if>
+
+				<if test="pageVo.parameters.endDate!=null">
+					AND V_FundIO.ts  <![CDATA[<=]]> #{pageVo.parameters.endDate,jdbcType=TIMESTAMP}
+				</if>
+
+				<if test="pageVo.parameters.io!=null">
+					AND V_FundIO.io=#{pageVo.parameters.io,jdbcType=INTEGER}
+				</if>
+
+				<if test="pageVo.parameters.all==0">
+					AND V_FundIO.reason in
+					<foreach item="item" index="index" collection="pageVo.parameters.money_op" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+
+				<if test="pageVo.parameters.all==1">
+					AND V_FundIO.reason != 100
+					AND V_FundIO.reason != 46
+					AND V_FundIO.reason != 42
+					AND V_FundIO.reason != 95
+				</if>
+			</if>
+		</if>
+		ORDER BY
+		V_FundIO.id DESC
+	</select>
+
+	<select id="searchUserBoundCard" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		SELECT
+		/*TO_COUNT*/
+		cashcard.id AS card_id,
+		cashcard.user_id AS user_id,
+		cashcard.bank_type AS bank_type,
+		cashcard.bank_name AS bank_name,
+		cashcard.city1 AS province,
+		cashcard.city2 AS city,
+		cashcard.city3 AS district,
+		cashcard.card_number AS card_number,
+		DATE_FORMAT(
+		cashcard.set_time,
+		"%Y-%m-%d %H:%i:%s"
+		) AS set_time,
+		cashcard.state,
+		cashcard.operator_id,
+		cashcard. OWNER AS card_owner_name,
+		cashcard.is_bind AS is_bind
+		FROM
+		CashCard AS cashcard
+		WHERE
+		cashcard.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+		AND cashcard.is_bind = 1
+		ORDER BY
+		cashcard.set_time DESC
+		LIMIT 0,1
+	</select>
+
+	<select id="searchUserInvestBidRePayIngList" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+			SELECT
+			i.auto isAuto,
+			b.bid_name bidName,
+			b.bid_id bidId,
+			ROUND (i.deal_money, 2) dealMoney,
+			ROUND (i.expect_interest, 2) expectInterest,
+			round(((
+			b.`remain_principal` *
+			a.`quota`
+			) / b.`money`/100
+			),2) AS `remain_principal`,
+			round((
+			(
+			b.`remain_interest` * a.`quota`
+			) /
+			b.`money`/100
+			),2) AS `remain_interest`,
+			i.user_is_vip isVip,
+			DATE_FORMAT(a.creat_time,'%Y-%m-%d %H:%i:%s') ts_submit,
+			i.current_level vipLevel,
+			b.state state,
+			ROUND (i.expect_reward, 2) expectReward,
+			b.duration issue,
+			a.asset_id assetId,
+		i.action_sn investId,
+		b.bid_type,
+		DATE_FORMAT(b.transact_time,'%Y-%m-%d %H:%i:%s') as transact_time
+
+			FROM
+			Invest i
+			INNER JOIN BidDocument b ON b.bid_id = i.bid_id
+			LEFT JOIN Asset a ON i.action_sn=a.invest_id
+		WHERE
+
+			b.state=10
+			and b.for_package = 0
+			and a.state=0
+			<if test="pageVo.parameters.user_id!=null">
+				and i.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+			</if>
+			<if test="pageVo.parameters.bid_id!=null">
+				and b.bid_id =#{pageVo.parameters.bid_id,jdbcType=INTEGER}
+			</if>
+			<if test="pageVo.parameters.asset_id!=null">
+				and a.asset_id =#{pageVo.parameters.asset_id,jdbcType=INTEGER}
+			</if>
+			ORDER BY
+			i.ts_submit DESC
+	</select>
+
+	<select id="searchUserAssetBuyBidRePayIngList" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+
+		SELECT
+		b.bid_name bidName,
+		b.bid_id bidId,
+		ROUND (a.deal_money, 2) dealMoney,
+		ROUND (a.reward, 2) expectReward,
+		ROUND (a.interest, 2) expectInterest,
+		<!--DATE_FORMAT(a.ts_submit,'%Y-%m-%d %H:%i:%s') ts_submit,-->
+		a.current_level vipLevel,
+		b.state state,
+		b.duration issue,
+		d.asset_id assetId,
+		a.action_sn investId,
+		b.issue_done,
+		c.action_sn AS saleId,
+		b.bid_type,
+		DATE_FORMAT(b.transact_time,'%Y-%m-%d %H:%i:%s') as transact_time,
+		DATE_FORMAT(a.ts_submit,"%Y-%m-%d %H:%i:%s") as ts_submit
+		FROM  AssetBuy a LEFT JOIN Asset d ON a.action_sn=d.invest_id  INNER JOIN BidDocument b on a.bid_id=b.bid_id LEFT JOIN AssetSale c ON a.asset_id=c.asset_id
+		where
+		b.for_package=0
+		AND	a.buyer_num =#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and b.state=10
+		and d.state=0
+		<if test="pageVo.parameters.bid_id!=null">
+			and b.bid_id =#{pageVo.parameters.bid_id,jdbcType=INTEGER}
+		</if>
+		ORDER BY
+		a.ts_submit DESC
+	</select>
+
+	<select id="incomeExpendTotal" parameterType="com.hexin.model.PageVo"
+			resultType="java.util.Map">
+		SELECT
+		ROUND(IFNULL(SUM(fund),0),2) AS totalMoney
+		FROM
+		V_FundIO
+		WHERE
+		uid = #{pageVo.parameters.user_id}
+		<if test="pageVo!=null">
+			<if test = "pageVo.parameters!=null">
+				<if test="pageVo.parameters.startDate!=null">
+					AND V_FundIO.ts  <![CDATA[>=]]> #{pageVo.parameters.startDate,jdbcType=TIMESTAMP}
+				</if>
+
+				<if test="pageVo.parameters.endDate!=null">
+					AND V_FundIO.ts  <![CDATA[<=]]> #{pageVo.parameters.endDate,jdbcType=TIMESTAMP}
+				</if>
+
+				<if test="pageVo.parameters.io!=null">
+					AND V_FundIO.io=#{pageVo.parameters.io,jdbcType=INTEGER}
+					AND V_FundIO.reason != 100
+					AND V_FundIO.reason != 46
+					AND V_FundIO.reason != 42
+					AND V_FundIO.reason != 95
+				</if>
+
+				<if test="pageVo.parameters.all==0">
+					AND V_FundIO.reason in
+					<foreach item="item" index="index" collection="pageVo.parameters.money_op" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+
+				<if test="pageVo.parameters.all==1">
+					AND V_FundIO.reason != 100
+					AND V_FundIO.reason != 46
+					AND V_FundIO.reason != 42
+					AND V_FundIO.reason != 95
+				</if>
+			</if>
+		</if>
+
+	</select>
+
+	<select id="searchWaitRepayment" parameterType="integer" resultType="map">
+		SELECT
+		/*TO_COUNT*/
+		`Repayplan`.`bid_id` AS `bid_id`,
+		`BidDocument`.`bid_name` AS `bid_name`,
+		`BidDocument`.`bid_type` AS `bid_type`,
+		`BidDocument`.`user_id` AS `bid_borrower_id`,
+		`BidDocument`.`guarantee` AS `guarantee_id`,
+		`BidDocument`.`repayment_type` AS `bid_repayment_type`,
+		`BidDocument`.rate AS `rate`,
+		BidDocument.bid_from_type AS bid_from_type,
+		BidDocument.is_quit AS is_quit,
+		`BidDocument`.loan_time AS loan_time,
+		ifnull(`BidDocument`.duration, 0) AS `bid_duration`,
+		`BidDocument`.money AS `money`,
+		`BidDocument`.issue_done AS `issue_done`,
+		`BidDocument`.join_issue,
+		`BidDocument`.for_package,
+		`BidDocument`.trusteeship_user_id AS trust_user_id,
+		DATE_FORMAT(
+		`BidDocument`.transact_time,
+		"%Y-%m-%d %H:%i:%s"
+		) AS `start_time`,
+		`Repayplan`.`issue` AS `repay_issue`,
+		DATE_FORMAT(
+		`Repayplan`.`repayday`,
+		"%Y-%c-%d %H:%i:%s"
+		) AS `ts_repay_due`,
+		`Repayplan`.`principal` AS `principal_to_repay`,
+		`Repayplan`.`interest` AS `interest_to_repay`,
+		`Repayplan`.`repay_type` AS repay_type,
+		`Repayplan`.`is_reinvest` AS is_reinvest,
+		`Repayplan`.`package_id` AS package_id,
+
+		IF (
+		Repayplan.repay_state = 10,
+		1,
+
+		IF (
+		(`Repayplan`.`state` = 0),
+
+		IF (
+		(
+		(
+		TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+		) > 0
+		),
+		(
+		TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+		),
+		0
+		),
+		0
+		)
+		) AS `days_overdue`,
+		ROUND(
+		(
+		(
+
+		IF (
+		(`Repayplan`.`state` = 0),
+
+		IF (
+		(
+		(
+		TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+		) > 0
+		),
+		(
+		TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+		),
+		0
+		),
+		0
+		) * `BidDocument`.`delaypayment_fee_rate`
+		) * (
+		`Repayplan`.`principal` + `Repayplan`.`interest`
+		)
+		),
+		2
+		) AS `punish_to_repay`,
+
+		IF (
+		(`Repayplan`.`state` = 0),
+
+		IF (
+		(
+		(
+		TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+		) <![CDATA[   <=  ]]> 0
+		),
+		`BidDocument`.`remain_principal`,
+		0
+		),
+		0
+		) AS `principal_remain`,
+		`BidDocument`.`remain_interest` AS `interest_remain`,
+		concat(
+		`BidDocument`.`prepayment_fee_rate`,
+		""
+		) AS `prepayment_fee_rate`,
+		ROUND(
+
+		IF (
+		(`Repayplan`.`state` = 0),
+		(
+
+		IF (
+		(
+		(
+		TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+		) <![CDATA[   <  ]]> 0
+		),
+		`BidDocument`.`remain_principal`,
+		0
+		) * `BidDocument`.`prepayment_fee_rate`
+		),
+		0
+		),
+		2
+		) AS `liquidated_damages`,
+
+		IF (
+		(
+		`Repayment`.`principal` IS NOT NULL
+		),
+		`Repayment`.`principal`,
+		0
+		) AS `principal_done`,
+
+		IF (
+		(
+		`Repayment`.`interest` IS NOT NULL
+		),
+		`Repayment`.`interest`,
+		0
+		) AS `interest_done`,
+		`Repayplan`.`state` AS `state`,
+		Repayplan.repay_state AS repay_state,
+		`BidDocument`.auditing_code AS auditing_code
+		FROM
+		`Repayplan`
+		LEFT JOIN `BidDocument` ON `Repayplan`.`bid_id` = `BidDocument`.`bid_id`
+		LEFT JOIN `Repayment` ON `Repayplan`.`bid_id` = `Repayment`.`bid_id`
+		AND `Repayplan`.`issue` = `Repayment`.`repay_issue`
+		AND `Repayment`.`repay_type` = 0
+		WHERE
+		`Repayplan`.`repay_type` = 0
+		AND `Repayplan`.`is_repurchase` = 0
+		AND Repayplan.bid_id = #{bidId,jdbcType=INTEGER }
+		AND Repayplan.state = 0
+		ORDER BY
+		`Repayplan`.`repayday` ASC
+
+	</select>
+
+	<select id="searchUserInvestAtInvestingList" resultType="java.util.Map">
+		select
+		i.auto isAuto,
+		b.bid_name bidName,
+		b.bid_id bidId,
+		ROUND(i.deal_money,2) dealMoney ,
+		ROUND(i.expect_interest,2) expectInterest,
+		i.user_is_vip isVip,
+		DATE_FORMAT(io.ts_submit,'%Y-%m-%d %H:%i:%s') ts_submit,
+		i.current_level vipLevel,
+		b.state  state,
+		ROUND(i.expect_reward ,2) expectReward,
+		i.action_sn investId,
+		IF((b.`repayment_type` = 2),1,b.`duration`) AS issue,
+		b.bid_type
+		from Invest i
+		inner join BidDocument b on b.bid_id = i.bid_id
+		LEFT JOIN invest_order io ON i.action_sn=io.order_id
+		<where>
+			b.for_package=0
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.user_id!=null">
+					and i.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.state!=null">
+					and b.state in (${pageVo.parameters.state})
+				</if>
+				<if test="pageVo.parameters.bid_id!=null">
+					and b.bid_id =#{pageVo.parameters.bid_id,jdbcType=INTEGER}
+				</if>
+			</if>
+		</where>
+		order by io.ts_submit DESC
+	</select>
+
+
+	<select id="searchAssetSale" resultType="java.util.Map">
+		SELECT/*TO_COUNT*/  /*REMOVE_ORDERBY*/
+		/*NO_TIME*/
+		`AssetSale`.asset_id AS asset_id,
+		`AssetSale`.`action_sn` AS `sale_id`,
+		AssetSale.price AS price,
+		AssetSale.interest_fee AS interestFee ,
+		AssetSale.user_id_num as user_id,
+		BidDocument.bid_id AS bid_id,
+		BidDocument.bid_name AS bid_name,
+		AssetSale.attorn_fee_rate AS attorn_fee_rate,
+		DATE_FORMAT(AssetSale.ts_submit ,'%Y-%m-%d %H:%i:%s') as start_time,
+		DATE_FORMAT(AssetSale.end_time ,'%Y-%m-%d %H:%i:%s') as end_time,
+		BidDocument.bid_type
+		FROM
+		AssetSale
+		JOIN BidDocument ON AssetSale.bid_id = BidDocument.bid_id
+		WHERE BidDocument.for_package=0 and AssetSale.state=1  and AssetSale.user_id_num =#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		<if test="pageVo.parameters.bid_id!=null">
+			and BidDocument.bid_id =#{pageVo.parameters.bid_id,jdbcType=INTEGER}
+		</if>
+		ORDER BY AssetSale.ts_submit desc
+
+	</select>
+
+	<select id="searchUserRepayOk" resultType="java.util.Map">
+		SELECT
+		ROUND(if(invest.action_sn is null,ab.deal_money,invest.deal_money),2) AS dealMoney,
+		ROUND(if(invest.action_sn is null,ab.interest,invest.expect_interest),2) AS expectInterest,
+		ROUND(if(invest.action_sn is null,ab.reward,invest.expect_reward),2) AS reward,
+		asset.state AS state,
+		<!--DATE_FORMAT(IFNULL(asset.update_time,asale.ts_submit),'%Y-%m-%d' )AS tsTime,-->
+		bid.bid_id AS bidId,
+		bid.bid_name AS bidName,
+		bid.duration AS issue,
+		if(invest.action_sn is null,ab.current_level,invest.current_level) AS vipLevel,
+		if(invest.action_sn is null,ab.action_sn,invest.action_sn) AS investId,
+		bid.is_repurchase AS isRepurchase,
+		bid.repurchase_state AS repurchaseState,
+		asale.action_sn AS saleId,
+		if(asset.state=2,asale.ts_submit,"") as saleTime,
+		bid.bid_type,
+		DATE_FORMAT(ab.ts_submit,'%Y-%m-%d %H:%i:%s') as buyTime,
+		DATE_FORMAT(bid.transact_time,'%Y-%m-%d %H:%i:%s') as transact_time
+		FROM
+		Asset asset
+		LEFT JOIN BidDocument bid ON asset.bid_id = bid.bid_id
+		LEFT JOIN Invest invest ON asset.invest_id = invest.action_sn
+
+		LEFT JOIN AssetBuy ab ON asset.invest_id=ab.action_sn
+		<!--LEFT JOIN invest_order io ON asset.invest_id=io.order_id-->
+		<!--LEFT JOIN asset_buy_order_record abor ON ab.action_sn=abor.order_id-->
+		LEFT JOIN AssetSale  asale ON asset.asset_id=asale.asset_id
+		WHERE asset.user_id_num=#{pageVo.parameters.user_id,jdbcType=INTEGER} AND bid.for_package=0 AND asset.state IN(2,4)
+		<if test="pageVo.parameters.bid_id!=null">
+			and bid.bid_id =#{pageVo.parameters.bid_id,jdbcType=INTEGER}
+		</if>
+		ORDER BY asset.asset_id DESC
+
+	</select>
+
+	<select id="searchBidWaitGathering" resultType="map">
+		SELECT/*TO_COUNT*/
+		`Asset`.`user_id` AS `user_id`,
+		`Asset`.`asset_id`AS `asset_id`,
+		`Asset`.`invest_id` AS `invest_id`,
+		`Asset`.`bid_id` AS `bid_id`,
+		`BidDocument`.`bid_name` AS `bid_name`,
+		`BidDocument`.`bid_type` AS `bid_type`,		`BidDocument`.`user_id` AS `borrower`,
+		`BidDocument`.`repayment_type` AS `repayment_type`,
+		IF((`BidDocument`.`repayment_type` = 2),1,`BidDocument`.`duration`) AS `bid_duration`,
+		DATE_FORMAT(
+		`Repayplan`.`repayday`,
+		"%Y-%m-%d %H:%i:%s"
+		)  AS `ts_income_due`,
+		`Repayplan`.`issue` AS `income_issue`,
+		`Repayplan`.`repay_type` AS `income_type`,
+		ROUND(((`Repayplan`.`principal` * `Asset`.`quota`) /
+		`BidDocument`.`money`)/100,2) AS `income_principal`,
+		ROUND(((`Repayplan`.`interest` * `Asset`.`quota`) /
+		`BidDocument`.`money`)/100,2) AS `income_interest`,
+		`Repayplan`.`state` AS `income_state`
+		FROM `Asset`
+		JOIN `BidDocument`
+		ON `Asset`.`bid_id` = `BidDocument`.`bid_id`
+		JOIN `Repayplan`
+		ON `Asset`.`bid_id` = `Repayplan`.`bid_id`
+		WHERE `Asset`.`state` in( 0,1)
+		AND
+		`Repayplan`.`repay_type` = 0
+		AND `Repayplan`.`repayday` >= `Asset`.`creat_time`
+		AND Asset.user_id_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and Repayplan.repayday <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and Repayplan.repayday <![CDATA[<=]]> #{pageVo.parameters.endDate}
+		AND Repayplan.state=0
+		AND BidDocument.for_package=0
+	</select>
+
+	<select id="searchBidWaitReward" resultType="map">
+
+		SELECT/*TO_COUNT*/
+		`Asset`.`user_id` AS `user_id`,
+		`Asset`.`asset_id`AS `asset_id`,
+		`Asset`.`invest_id` AS `invest_id`,
+		`Asset`.`bid_id` AS `bid_id`,
+		`BidDocument`.`bid_name` AS `bid_name`,
+		`BidDocument`.`bid_type` AS `bid_type`,		`BidDocument`.`user_id` AS `borrower`,
+		`BidDocument`.`repayment_type` AS `repayment_type`,
+		IF((`BidDocument`.`repayment_type` = 2),1,`BidDocument`.`duration`) AS `bid_duration`,
+		`Repayplan`.`repayday` AS `ts_income_due`,
+		`Repayplan`.`issue` AS `income_issue`,
+		`Repayplan`.`repay_type` AS `income_type`,
+		ROUND(((`Repayplan`.interest * `Asset`.`quota`) /
+		`BidDocument`.`money`)/100,2) AS `income_reward`,
+
+		`Repayplan`.`state` AS `income_state`
+		FROM `Asset`
+		JOIN `BidDocument`
+		ON `Asset`.`bid_id` = `BidDocument`.`bid_id`
+		JOIN `Repayplan`
+		ON `Asset`.`bid_id` = `Repayplan`.`bid_id`
+		WHERE `Asset`.`state` = 0
+		AND
+		`Repayplan`.`repay_type` = 1
+		AND `Repayplan`.`repayday` >= `Asset`.`creat_time`
+		AND Asset.user_id_num=#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and Repayplan.repayday <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and Repayplan.repayday <![CDATA[<=]]> #{pageVo.parameters.endDate}
+		AND Repayplan.state=0
+		AND BidDocument.for_package=0
+	</select>
+
+	<select id="getWaitingForRepayFnPackageLogs" resultType="map">
+		SELECT
+		DATE_FORMAT(DATE_ADD(expect_end_time,INTERVAL if(lock_issue is null,issue,lock_issue) MONTH),'%Y-%m-%d 00:00:00') AS completeTime,
+		p.`name`,
+		p.id,
+		ROUND(sum(invest.deal_amount),2) as amount,
+		p.package_type as packageType,
+		p.rate,
+		if(lock_issue is null,p.issue,p.lock_issue) as issue,
+		p.lock_issue,
+		p.issue as totalIssue,
+		invest.user_id_num as userId,
+		p.add_rate
+		FROM
+		finance_invest AS invest
+		JOIN finance_package AS p ON p.id = invest.package_id
+		left join (select package_id,finance_account_id,cashed_state,quit_state from finance_urgent_quit
+		where user_id = #{pageVo.parameters.userId,jdbcType=VARCHAR} and quit_state!=0) fuq on invest.package_id=fuq.package_id
+		left JOIN (select max(rate) as rate,version_id from version_rate GROUP BY version_id) vr on p.version_id=vr.version_id
+		WHERE invest.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER} AND p.state =30
+		and  if(fuq.finance_account_id is  null ,'1=1',fuq.cashed_state in(0,2) and fuq.quit_state !=0)
+		<!--and DATE_FORMAT(p.complete_time,'%y-%m') = DATE_FORMAT(CURDATE(),'%y-%m')-->
+		and DATE_FORMAT(DATE_ADD(expect_end_time,INTERVAL if(lock_issue is null,issue,lock_issue) MONTH),'%Y-%m-%d 00:00:00') <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and DATE_FORMAT(DATE_ADD(expect_end_time,INTERVAL if(lock_issue is null,issue,lock_issue) MONTH),'%Y-%m-%d 00:00:00') <![CDATA[<=]]> #{pageVo.parameters.endDate}
+		group by p.id
+		order by p.complete_time asc,p.id asc
+
+	</select>
+
+	<select id="searchFinanceReceivedReward" resultType="map">
+
+		SELECT
+		ROUND(a.reward,2) as reward,
+		a.bid_id as packageId,
+		b.name,
+		user_id_num as userId,
+		DATE_FORMAT(repayday,"%Y-%m-%d %H:%i:%s") as repay_time
+
+		FROM
+		RewardPlan a LEFT JOIN finance_package b ON a.bid_id=b.id
+		WHERE
+		a.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+		<!--AND DATE_FORMAT(repayday, '%y-%m') = DATE_FORMAT(CURDATE(), '%y-%m')-->
+		AND a.state = 2
+		AND a.reward_type in(2,3)
+		and a.repayday <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and a.repayday <![CDATA[<=]]> #{pageVo.parameters.endDate}
+		order by repayday
+	</select>
+
+	<select id="searchFinrewardwaitgathering" resultType="map">
+
+		SELECT
+		ROUND(a.reward,2) as reward,
+		a.bid_id as packageId,
+		b.name,
+		user_id_num as userId,
+		DATE_FORMAT(repayday,"%Y-%m-%d %H:%i:%s") as repay_time
+		FROM
+		RewardPlan a LEFT JOIN finance_package b ON a.bid_id=b.id
+		WHERE
+		a.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+		<!--AND DATE_FORMAT(repayday, '%y-%m') = DATE_FORMAT(CURDATE(), '%y-%m')-->
+		AND a.state = 0
+		AND a.reward_type = 3
+		and a.repayday <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and a.repayday <![CDATA[<=]]> #{pageVo.parameters.endDate}
+	</select>
+
+	<select id="searchBidAlreadyGathering" resultType="map">
+		SELECT
+		/*TO_COUNT*/
+		`Income`.`user_id` AS `user_id`,
+		DATE_FORMAT(
+		`Income`.`ts_income`,
+		"%Y-%m-%d %H:%i:%s"
+		) AS `ts_income`,
+		`Income`.`type` AS `income_type`,
+		`BidDocument`.`bid_id` AS bid_id,
+		`BidDocument`.`bid_name` AS `bid_name`,
+		`BidDocument`.`duration` AS `bid_duration`,
+		`BidDocument`.`repayment_type` AS `bid_repayment_type`,
+		`Income`.`issue` AS `income_issue`,
+		ROUND(`Income`.`principal`,2) AS `income_principal`,
+		ROUND(`Income`.`interest`,2) AS `income_interest`,
+		ROUND(`Income`.`reward`,2) AS `income_reward`,
+		`Income`.`overdue_day` AS `overdue_day`,
+		`Income`.`overdue_interest` AS `income_overdue_interest`,
+		ROUND(`Income`.`liquidated_damages`,2) AS `liquidated_damages`
+		FROM
+		`Income`
+		JOIN `BidDocument` ON `Income`.`bid_ID` = `BidDocument`.`bid_id`
+		AND Income.package_id IS NULL
+		WHERE
+		Income.type = 0
+		AND BidDocument.for_package = 0
+		AND Income.user_id_num =#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and Income.ts_income <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and Income.ts_income <![CDATA[<=]]> #{pageVo.parameters.endDate}
+	</select>
+
+	<select id="searchFinAlreadyGathering" resultType="map">
+		select
+		DATE_FORMAT(
+		fal.create_time,
+		"%Y-%m-%d %H:%i:%s"
+		) AS repay_time,
+		p.`name`,
+		p.id as package_id,
+		ROUND(sum(if(fal.log_type=32,-fal.amount ,0) ),2) as expect_interest,
+		ROUND(sum(if(fal.log_type=31,-fal.amount,0) ),2) as expect_principal,
+		0 as quit_charge,
+		u.user_id_num as userId,
+		p.package_type as packageType
+		from finance_account as u
+		join finance_account_log  as fal on u.id = fal.from_finance_account_id
+		join finance_package as p on u.package_id = p.id
+		<!--left join finance_urgent_quit fuq on fuq.finance_account_id=u.id-->
+		where
+		u.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and  fal.log_type in (31,32)
+		and p.package_type!=4
+		and fal.create_time <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and fal.create_time <![CDATA[<=]]> #{pageVo.parameters.endDate}
+		group by p.id
+		order by fal.create_time DESC,p.id DESC
+
+	</select>
+
+
+	<select id="searchFinMonthAlreadyGathering" resultType="map">
+		select
+
+		p.`name`,
+		p.id as package_id,
+
+		fuq.join_money as expect_principal,
+		fuq.quit_interest as expect_interest,
+		fuq.quit_charge as quit_charge,
+		u.user_id_num as user_id,
+		p.package_type,
+		DATE_FORMAT(
+		fuq.cashed_time ,
+		"%Y-%m-%d %H:%i:%s"
+		) AS repay_time,
+		p.package_type as packageType
+
+		from finance_account as u
+		join finance_package as p on u.package_id = p.id
+		left join finance_urgent_quit fuq on fuq.finance_account_id=u.id and fuq.cashed_state=1
+		where
+		u.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+
+		and p.package_type=4
+
+		and fuq.cashed_time <![CDATA[>=]]> #{pageVo.parameters.startDate}
+		and fuq.cashed_time <![CDATA[<=]]> #{pageVo.parameters.endDate}
+		-- GROUP BY u.user_id_num
+		order by fuq.cashed_time DESC,p.id DESC;
+	</select>
+
+	<select id="queryInvestOrder" resultType="map">
+		select `order`.`order_id` as `order_id`,`order`.`bid_id` as `bid_id`,ROUND(`order`.`deal_money`,2) as `deal_money`,
+		`order`.`state` as `state`,DATE_FORMAT(
+		`order`.`ts_submit`,
+		"%Y-%m-%d %H:%i:%s"
+		) as `create_time`,ROUND(`order`.`expect_interest`,2) as `expect_interest`,
+		`order`.`op_memo` as `op_memo`,`bid`.`bid_name` as `bid_name`,ROUND(`order`.voucher_money,2) as voucher_money
+		from `invest_order` as `order` inner join `BidDocument` as `bid` on `order`.`bid_id` = `bid`.`bid_id`
+		<trim prefix="where" prefixOverrides="and ">
+			<if test="pageVo !=null">
+				<if test="pageVo.parameters!=null">
+					<if test="pageVo.parameters.user_id!=null">
+						and `order`.`user_id_num` = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+					</if>
+				</if>
+			</if>
+		</trim>
+		order by `order`.`ts_submit` desc
+	</select>
+
+	<select id="queryAssetbuyOrder" parameterType="com.hexin.model.PageVo" resultType="java.util.Map">
+		select `order`.`order_id` as `order_id`,`order`.`asset_id` as `asset_id`,`order`.`tx_amount` as `deal_money`,
+		`order`.`state` as `state`,DATE_FORMAT(
+		`order`.`tx_submit`,
+		"%Y-%m-%d %H:%i:%s"
+		) as `create_time` ,`order`.`interest` as `expect_interest`,
+		`order`.`op_memo` as `op_memo`,`bid`.`bid_name` as `bid_name`,AssetSale.action_sn as saleId
+		from `asset_buy_order_record` as `order`
+		inner join `Asset` as `asset` on `order`.`asset_id` = `asset`.`asset_id`
+		inner join `BidDocument` as `bid` on `asset`.`bid_id` = `bid`.`bid_id`
+		INNER JOIN AssetSale  ON `order`.asset_id=AssetSale.asset_id
+		<trim prefix="where" prefixOverrides="and ">
+			<if test="pageVo !=null">
+				<if test="pageVo.parameters!=null">
+
+					<if test="pageVo.parameters.user_id!=null">
+						and `order`.`user_id` = #{pageVo.parameters.user_id,jdbcType=VARCHAR}
+					</if>
+
+				</if>
+			</if>
+		</trim>
+		order by `order`.`tx_submit` desc
+	</select>
+
+	<select id="queryAssetSaleOrder" resultType="java.util.Map">
+		SELECT/*TO_COUNT*/  /*REMOVE_ORDERBY*/
+		/*NO_TIME*/
+		`AssetSale`.asset_id AS asset_id,
+		`AssetSale`.`action_sn` AS `sale_id`,
+		ROUND(AssetSale.price,2) AS price,
+		ROUND(ifnull(AssetSale.interest_fee,0),2) AS interestFee ,
+		AssetSale.user_id_num as user_id,
+		BidDocument.bid_id AS bid_id,
+		BidDocument.bid_name AS bid_name,
+		AssetSale.attorn_fee_rate AS attorn_fee_rate,
+		DATE_FORMAT(AssetSale.start_time ,'%Y-%m-%d %H:%i:%s') as start_time,
+		DATE_FORMAT(AssetSale.end_time ,'%Y-%m-%d %H:%i:%s') as end_time,
+		AssetSale.state,
+		ROUND(AssetSale.remain_interest,2) as remain_interest,
+		AssetSale.receivable_interest as receivable_interest
+		FROM
+		AssetSale
+		JOIN BidDocument ON AssetSale.bid_id = BidDocument.bid_id
+		WHERE BidDocument.for_package=0  and AssetSale.user_id_num =#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		ORDER BY AssetSale.ts_submit desc
+
+	</select>
+
+	<select id="queryRechargeOrder" resultType="java.util.Map">
+		SELECT/*TO_COUNT*/
+		`charge`.action_sn as job_id,
+		`charge`.user_id_num as user_id,
+		ROUND(`charge`.money,2) as recharge_money,
+		`charge`.type as recharge_type,
+		`charge`.from_bank as recharge_from,
+		ifnull(`charge`.op_memo,'') as op_memo,
+		DATE_FORMAT(`charge`.ts_submit,"%Y-%m-%d %H:%i:%s") as ts_submit,
+		ifnull(`charge`.audit_memo,'') AS `audit_memo`,
+		charge.last_state,
+		charge.third_party,
+		`charge`.card_id as card_id
+
+		FROM
+		Recharge charge
+		<where>
+			<if test="pageVo !=null">
+				<if test="pageVo.parameters!=null">
+					<if test="pageVo.parameters.user_id!=null">
+						and `charge`.user_id_num <![CDATA[=]]> #{pageVo.parameters.user_id,jdbcType=INTEGER}
+					</if>
+				</if>
+			</if>
+		</where>
+		order by `charge`.ts_submit desc
+	</select>
+
+	<select id="queryWithdrawCashOrder" resultType="map">
+		SELECT/*TO_COUNT*/
+		`Cash`.`action_sn` AS `job_id`,
+		DATE_FORMAT(Cash.ts_submit,"%Y-%m-%d %H:%i:%s") AS ts_submit,
+		Cash.user_id AS `user_id`,
+		Account.user_type AS `passporttype`,
+		Cash.cash_type AS `cash_type`,
+		ROUND(Cash.apply_money,2) AS `cash_money_apply`,
+		format((`Cash`.`apply_money` /
+		`Cash`.`money_can_use`),2) AS `cash_percent`,
+		Cash.cash_fee AS `cash_fee`,
+		Cash.cash_net_fee AS `cash_net_fee`,
+		Cash.`last_state` AS `state`,
+		CashCard.city1 AS `province`,
+		CashCard.card_number AS `card_id`,
+		CashCard.city2 AS `city`,
+		CashCard.city3 AS `district`,
+		CashCard.bank_type AS `bank_type`,
+		CashCard.bank_name AS `bank_name`,
+		CashCard.owner AS
+		`card_owner_name`,
+		Cash.audit1_user_id AS `audit1_user_id`,
+		DATE_FORMAT(Cash.ts_audit1,"%Y-%m-%d %H:%i:%s") AS
+		ts_audit1,
+		Cash.audit2_user_id AS `audit2_user_id`,
+		DATE_FORMAT(Cash.ts_audit2,"%Y-%m-%d %H:%i:%s") AS ts_audit2,
+		DATE_FORMAT(Cash.ts_cancel,"%Y-%m-%d %H:%i:%s") AS ts_cancel,
+		DATE_FORMAT(Cash.ts_fail,"%Y-%m-%d %H:%i:%s") AS
+		`ts_fail`,
+		(
+		SELECT
+		COUNT(*)
+		FROM
+		CashCard
+		WHERE
+		CashCard.user_id = Cash.user_id
+		) AS 'card_count',
+		`CashCard`.`state` AS
+		"card_state",
+		`Cash`.`real_trans_fee` AS `real_trans_fee`
+		FROM ((`Cash`
+		JOIN `CashCard`
+		ON ((`Cash`.`Cash_card` =
+		`CashCard`.`id`))
+		JOIN `Account`
+		ON `Cash`.`user_id` = `Account`.`user_id`
+		))
+		WHERE Cash.user_id_num=#{pageVo.parameters.user_id,jdbcType=INTEGER} ORDER BY Cash.ts_submit desc
+
+	</select>
+
+	<select id="queryFinanceQuitOrder" resultType="map">
+		SELECT
+		DATE_FORMAT(fuq.begin_quit_time,"%Y-%m-%d %H:%i:%s") as beginQuitTime,
+		fuq.id as quitId,
+		fuq.package_id as packageId,
+		fuq.package_name as packageName,
+		ROUND(fuq.join_money,2) as joinMoney,
+		ROUND(fuq.quit_interest,2) as quitInterest,
+		ROUND(fuq.quit_charge,2) as quitCharge,
+		ROUND(fuq.cashed_money,2) as expectMoney,
+		fuq.cashed_state as cashState,
+		fuq.quit_state as quitState,
+		CASE
+		when fuq.cashed_state=1 then 1
+		when fuq.quit_state=0 then 0
+		when fuq.quit_state=1 then 3
+		when fuq.quit_state in(2,3) then 2
+		END
+		as state,
+		fuq.quit_rate as quitRate,
+		fuq.owned_days as ownedDays
+		FROM
+		finance_urgent_quit fuq LEFT JOIN finance_package fp ON fuq.package_id=fp.id
+		where fuq.package_type !=5
+		<if test="pageVo.parameters.user_id!=null">
+			and fuq.user_id <![CDATA[=]]> #{pageVo.parameters.user_id,jdbcType=VARCHAR}
+		</if>
+
+	</select>
+
+	<select id="searchFinanceMMHInvest" parameterType="com.hexin.model.PageVo" resultType="map">
+		SELECT
+		date_format(finance_invest.create_time,'%Y-%m-%d %H:%i:%S') as create_time,/*加入时间*/
+		finance_package.`name` as package_name,/*标题*/
+		finance_package.id as package_id ,/*荷包编号*/
+		sum(finance_invest.deal_amount) as deal_amount,/*有效投资金额*/
+		finance_package.state as state,/*荷包状态*/
+		date_format(finance_package.expect_end_time,'%Y-%m-%d') as expect_end_time,
+		date_format(finance_package.expect_end_time,'%Y-%m-%d %H:%i:%S') as expect_end_time2,
+		date_format(date_add(finance_package.expect_end_time,interval if(finance_package.lock_issue is null,finance_package.issue,finance_package.lock_issue) month),'%Y-%m-%d') as lock_end_time,
+		date_format(finance_package.complete_time,'%Y-%m-%d %H:%i:%S') as complete_time,/*兑付日*/
+		date_format(finance_package.complete_time,'%Y-%m-%d') as complete_time1,/*兑付日*/
+		date_format(fuq.begin_quit_time,'%Y-%m-%d') as begin_quit_time,/*申请退出时间*/
+		date_format(fuq.begin_quit_time,'%Y-%m-%d %H:%i:%S') as begin_quit_time1,/*申请退出时间*/
+		finance_package.package_type as package_type,
+		finance_package.reward_rate,
+		ROUND(sum(finance_invest.deal_amount*(finance_package.reward_rate/100/12*finance_package.`issue`)),2) AS expect_reward,
+		sum(finance_invest.voucher_money) as voucher_money,/* 代金券面值或加息值 */
+		finance_invest.coupon_type as coupon_type,/* 代金券类型*/
+		case when fuq.quit_state is null and finance_package.state in(25,30) then 1 /*持有中*/
+		when fuq.quit_state=0 then 1/*持有中*/
+		when fuq.quit_state=1 then 2 /*申请退出*/
+		when fuq.quit_state in(2,3,4) and fuq.cashed_state in(0,2) then 3 /*退出中 */
+		when fuq.quit_state in(2,3) and fuq.cashed_state=1 then 4 /*已退出 */
+		when finance_package.state=35 then 4/*已结清按已退出*/
+		when fuq.quit_state is null and finance_package.state in(15,21) then 5 /*加入中*/
+		end as owned_state,
+		/*理财包紧急退出权限 0代表不能紧急退出 1可以紧急退出*/
+		case when if(lock_issue is null,finance_package.package_type=2,finance_package.package_type=2 and date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval finance_package.lock_issue month)>date_format(now(), '%Y-%m-%d')) then 0
+		when date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval 1 month)>date_format(now(), '%Y-%m-%d') then 0
+		when date_format(now(),'%Y-%m-%d')>=date_sub(date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval if(finance_package.lock_issue is null,finance_package.issue,finance_package.lock_issue) month),interval 5 day) and date_format(now(),'%Y-%m-%d')  <![CDATA[<]]> date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval if(finance_package.lock_issue is null,finance_package.issue,finance_package.lock_issue) month)  then 0
+		when now()>=date_sub(date_format(finance_package.complete_time, '%Y-%m-%d'),interval 5 day) and finance_package.state !=35 then 0 /*兑付日以及前5天不可以*/
+		when if(lock_issue is null,finance_package.is_newer=1,finance_package.is_newer=1 and date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval finance_package.lock_issue month)>date_format(now(), '%Y-%m-%d')) then 0
+		when finance_package.state=35 then 0
+		when finance_package.is_org=1 then 0
+		else 1
+		end as can_quit,
+		fuq.quit_interest,
+		finance_package.lock_issue,
+		finance_package.is_newer,
+		finance_package.version_id,finance_package.is_org,
+		fuq.quit_type,
+		fuq.cashed_state,
+		fuq.owned_days,
+		finance_package.issue,
+		fuq.user_id,
+		date_format(finance_invest.create_time,'%Y-%m-%d') as ts_submit,
+		date_format(fuq.begin_assign_time,'%Y-%m-%d %H:%i:%S') as begin_assign_time,
+		<!--TRUNCATE(cashed_money,2) as cashed_money,-->
+		date_format(fuq.end_quit_time,'%Y-%m-%d') as end_quit_time,
+		fuq.quit_state,
+		fuq.quit_charge,
+		date_format(finance_package.effect_time,'%Y-%m-%d %H:%i:%S')  as effect_time
+		FROM
+		finance_package AS finance_package left join
+		finance_invest as finance_invest on finance_invest.package_id = finance_package.id
+		LEFT JOIN (select quit_state,cashed_state,package_id,user_id,begin_quit_time,quit_interest,quit_type,owned_days,cashed_money,end_quit_time,quit_charge,begin_assign_time from finance_urgent_quit where user_id = #{pageVo.parameters.userId,jdbcType=VARCHAR} and quit_state!=0
+		order by begin_quit_time desc) as fuq on finance_invest.package_id =fuq.package_id and finance_invest.user_id=fuq.user_id
+		where finance_package.package_type=5
+		<!--and ((fuq.quit_state is null and finance_package.state in(25,30)) or  fuq.quit_state=0)-->
+		<if test="pageVo !=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.owned_state!=null">
+					<choose>
+						<when test="pageVo.parameters.owned_state==1">
+							and ((fuq.quit_state is null and finance_package.state in(25,30)) or  fuq.quit_state=0)
+						</when>
+						<when test="pageVo.parameters.owned_state==2">
+							/*and fuq.quit_state=1*/
+							and finance_package.state in(15,20,21)
+						</when>
+						<when test="pageVo.parameters.owned_state==3">
+							<!--and fuq.quit_state in(2,3) and fuq.cashed_state=0-->
+							and fuq.quit_state in(1,2,3,4) and fuq.cashed_state in(0,2)
+						</when>
+						<when test="pageVo.parameters.owned_state==4">
+							and ((fuq.quit_state in(2,3) and fuq.cashed_state=1) or  finance_package.state=35)
+						</when>
+						<when test="pageVo.parameters.owned_state==5">
+							and finance_package.state in(15,20,21)
+						</when>
+					</choose>
+				</if>
+				<if test="pageVo.parameters.lend_time_start!=null">
+					and finance_invest.create_time <![CDATA[<=]]> #{pageVo.parameters.lend_time_start,jdbcType=TIMESTAMP}
+				</if>
+				<if test="pageVo.parameters.lend_time_end!=null">
+					and finance_invest.create_time <![CDATA[<=]]> #{pageVo.parameters.lend_time_end,jdbcType=TIMESTAMP}
+				</if>
+				<if test="pageVo.parameters.package_id!=null">
+					and finance_package.id =  #{pageVo.parameters.package_id,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.package_name!=null">
+					and finance_package.name like CONCAT(#{pageVo.parameters.package_name,jdbcType=VARCHAR} )
+				</if>
+				<if test="pageVo.parameters.user_id!=null">
+					and finance_invest.user_id_num =#{pageVo.parameters.user_id,jdbcType=INTEGER}
+				</if>
+			</if>
+		</if>
+
+		group by finance_invest.package_id
+		order by finance_invest.create_time desc
+	</select>
+
+	<select id="checkQuitBeforeOrAfterLockDate" resultType="boolean">
+		select date_add(date_format(expect_end_time, '%Y-%m-%d'), interval ifnull(lock_issue,issue) month)<![CDATA[<]]>now() from finance_package
+		where id=#{packageId,jdbcType=INTEGER}
+	</select>
+
+	<select id="getWaitingforRepaymonthFnpackage" resultType="map">
+		SELECT
+		DATE_FORMAT(mp.repay_day,'%Y-%m-%d %H:%i:%S') AS repay_time,
+		financePackage.`name` AS `name`,
+		ROUND(mp.principal,2) as expect_principal,
+		ROUND(mp.interest,2) as expect_interest,
+		financePackage.id as fnId,
+		financePackage.issue as totalIsuue,
+		mp.issue as currentIsuue
+
+		FROM
+		month_pay_package_plan mp
+		INNER JOIN finance_package financePackage
+		ON mp.package_id = financePackage.id
+		WHERE mp.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+		<if test="pageVo!=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.startDate!=null">
+					and mp.repay_day <![CDATA[>=]]> #{pageVo.parameters.startDate}
+				</if>
+				<if test="pageVo.parameters.endDate!=null">
+					and mp.repay_day<![CDATA[<=]]> #{pageVo.parameters.endDate}
+				</if>
+				<if test="pageVo.parameters.state!=null">
+					and mp.state = #{pageVo.parameters.state,jdbcType=INTEGER}
+				</if>
+			</if>
+		</if>
+	</select>
+
+	<select id="searchAssetList"  resultType="map">
+		select
+		DATE_FORMAT(Asset.creat_time,"%Y-%m-%d %H:%i:%s") as creat_time,
+		bid.bid_name,
+		bid.bid_id,
+		sum(IFNULL((select deal_money from AssetBuy where  AssetBuy.action_sn = Asset.invest_id),0)) as sum_a,
+		sum(IFNULL((select Invest.deal_money from Invest where Invest.action_sn = Asset.invest_id),0)) as sum_b,
+		if(Asset.state in (0,1,4),bid.state,0) as state,
+		Asset.state as asset_state,
+		bid.is_finish_claim
+		from
+		Asset  join BidDocument bid
+		on Asset.bid_id = bid.bid_id
+		and Asset.user_id_num =   #{pageVo.parameters.user_id,jdbcType=INTEGER}
+		and Asset.fn_package_id  = #{pageVo.parameters.package_id,jdbcType=INTEGER}
+
+		<if test="pageVo!=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.fnPackId!=null">
+					AND bid.fn_package_id = #{pageVo.parameters.fnPackId,jdbcType=INTEGER}
+				</if>
+			</if>
+		</if>
+		group by bid.bid_id
+		order by creat_time desc,bid.bid_id asc
+
+	</select>
+
+	<select id="searchFinanceInvest" parameterType="com.hexin.model.PageVo" resultType="map">
+		SELECT
+		finance_package.`name` as package_name,/*标题*/
+		finance_package.id as package_id ,/*荷包编号*/
+		ROUND(sum(finance_invest.deal_amount),2) as deal_amount,/*有效投资金额*/
+		date_format(finance_package.expect_end_time,'%Y-%m-%d %H:%i:%S') as expect_end_time,
+		date_format(finance_package.expect_end_time,'%Y-%m-%d') as expect_end_time1,
+		date_format(finance_package.complete_time,'%Y-%m-%d %H:%i:%S') as complete_time,
+		date_format(finance_package.complete_time,'%Y-%m-%d') as complete_time1,
+		finance_package.package_type as package_type,
+		<!--ROUND(sum(finance_invest.deal_amount*finance_package.reward_rate/100/12*IFNULL(finance_package.lock_issue,0)),2) AS expect_reward,-->
+		finance_package.lock_issue,
+		finance_package.is_newer,
+		finance_package.version_id,
+		finance_package.issue,
+		finance_package.rate as rate,
+		case when fuq.quit_state is null and finance_package.state =30 then 1 /*持有中*/
+		when fuq.quit_state=0 then 1/*持有中*/
+		when fuq.quit_state=1 then 2 /*申请退出*/
+		when fuq.quit_state in(2,3,4) and fuq.cashed_state in(0,2) then 3 /*退出中 */
+		when fuq.quit_state in(2,3) and fuq.cashed_state=1 then 4 /*已退出 */
+		when finance_package.state=35 then 4/*已结清按已退出*/
+		end as owned_state,
+		finance_package.is_org,
+		finance_package.reward_rate,
+		finance_package.add_rate,
+		case when if(lock_issue is null,finance_package.package_type=2,finance_package.package_type=2 and date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval finance_package.lock_issue month)>date_format(now(), '%Y-%m-%d')) then 0
+		when date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval 1 month)>date_format(now(), '%Y-%m-%d') then 0
+		when date_format(now(),'%Y-%m-%d')>=date_sub(date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval if(finance_package.lock_issue is null,finance_package.issue,finance_package.lock_issue) month),interval 5 day) and date_format(now(),'%Y-%m-%d')  <![CDATA[<]]> date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval if(finance_package.lock_issue is null,finance_package.issue,finance_package.lock_issue) month)  then 0
+		when now()>=date_sub(date_format(finance_package.complete_time, '%Y-%m-%d'),interval 5 day) and finance_package.state !=35 then 0 /*兑付日以及前5天不可以*/
+		when if(lock_issue is null,finance_package.is_newer=1,finance_package.is_newer=1 and date_add(date_format(finance_package.expect_end_time, '%Y-%m-%d'), interval finance_package.lock_issue month)>date_format(now(), '%Y-%m-%d')) then 0
+		when finance_package.state=35 then 0
+		when finance_package.is_org=1 then 0
+		when package_type=4 and DATE(finance_package.create_time)<![CDATA[<]]>'2017-07-01' then 0
+		else 1
+		end as can_quit
+		FROM
+		finance_package AS finance_package left join
+		finance_invest as finance_invest on finance_invest.package_id = finance_package.id
+		LEFT JOIN (select quit_state,cashed_state,package_id,user_id,begin_quit_time,quit_interest,quit_type,owned_days from finance_urgent_quit where user_id =#{pageVo.parameters.userId,jdbcType=VARCHAR}
+		and quit_state!=0 order by begin_quit_time desc) as fuq on finance_invest.package_id =fuq.package_id and finance_invest.user_id=fuq.user_id
+		where ((fuq.quit_state is null and finance_package.state =30) or  fuq.quit_state=0)
+		and package_type!=5
+		<if test="pageVo!=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.fnPackId!=null">
+					AND finance_package.id = #{pageVo.parameters.fnPackId,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.user_id!=null">
+					and finance_invest.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.package_name!=null">
+					and finance_package.name like CONCAT(#{pageVo.parameters.package_name,jdbcType=VARCHAR} )
+				</if>
+			</if>
+		</if>
+		group by finance_invest.package_id
+		order by finance_invest.create_time desc
+
+	</select>
+
+	<select id="searchFinanceJoin" parameterType="com.hexin.model.PageVo" resultType="map">
+		SELECT
+		finance_package.`name` as package_name,/*标题*/
+		finance_package.id as package_id ,/*荷包编号*/
+		ROUND(sum(finance_invest.deal_amount),2) as deal_amount,/*有效投资金额*/
+		date_format(finance_package.expect_end_time,'%Y-%m-%d %H:%i:%S') as expect_end_time,
+		finance_package.package_type as package_type,
+		<!--ROUND(sum(finance_invest.deal_amount*finance_package.reward_rate/100/12*finance_package.`issue`),2) AS expect_reward,-->
+		finance_package.lock_issue,
+		finance_package.is_newer,
+		finance_package.version_id,
+		finance_package.issue,
+		ROUND(sum(finance_package.rate),2) as rate,finance_package.state,date_format(finance_invest.create_time,'%Y-%m-%d %H:%i:%S') as create_time,
+		finance_package.reward_rate,
+		finance_package.add_rate,
+		date_format(finance_package.effect_time,'%Y-%m-%d %H:%i:%S') as effect_time
+		FROM
+		finance_package AS finance_package left join
+		finance_invest as finance_invest on finance_invest.package_id = finance_package.id
+		LEFT JOIN (select quit_state,cashed_state,package_id,user_id,begin_quit_time,quit_interest,quit_type,owned_days from finance_urgent_quit where user_id =#{pageVo.parameters.userId,jdbcType=VARCHAR}
+		and quit_state!=0 order by begin_quit_time desc) as fuq on finance_invest.package_id =fuq.package_id and finance_invest.user_id=fuq.user_id
+		where  finance_package.state in(15,20,21,25)
+		and package_type!=5
+
+		<if test="pageVo!=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.fnPackId!=null">
+					AND finance_package.id = #{pageVo.parameters.fnPackId,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.user_id!=null">
+					and finance_invest.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.package_name!=null">
+					and finance_package.name like CONCAT(#{pageVo.parameters.package_name,jdbcType=VARCHAR} )
+				</if>
+			</if>
+		</if>
+		group by finance_invest.package_id
+		order by finance_invest.create_time desc
+
+	</select>
+
+	<select id="queryFinanceMMQuitOrder" resultType="map">
+		SELECT
+		DATE_FORMAT(fuq.begin_quit_time,"%Y-%m-%d %H:%i:%s") as beginQuitTime,
+		fuq.id as quitId,
+		fuq.package_id as packageId,
+		fuq.package_name as packageName,
+		ROUND(fuq.join_money,2) as joinMoney,
+		ROUND(fuq.quit_interest,2) as quitInterest,
+		ROUND(fuq.quit_charge,2) as quitCharge,
+		ROUND(fuq.cashed_money,2) as expectMoney,
+		fuq.cashed_state as cashState,
+		CASE
+		when fuq.cashed_state=1 then 1
+		when fuq.quit_state=0 then 0
+		when fuq.quit_state=1 then 3
+		when fuq.quit_state in(2,3) then 2
+		END
+		as state,
+		fuq.quit_rate as quitRate,
+		fuq.owned_days as ownedDays,
+		date_format(fp.expect_end_time,'%Y-%m-%d') as expect_end_time,
+		date_format(fp.expect_end_time,'%Y-%m-%d %H:%i:%S') as expect_end_time2,
+		fuq.version_id,
+		fp.issue,
+		fuq.quit_state,
+		fuq.owned_days,
+		fuq.quit_interest,
+		fuq.quit_charge,
+		date_format(fuq.begin_quit_time,'%Y-%m-%d') as begin_quit_time,/*申请退出时间*/
+		date_format(fuq.begin_quit_time,'%Y-%m-%d %H:%i:%S') as begin_quit_time1,/*申请退出时间*/
+		date_format(fuq.begin_assign_time,'%Y-%m-%d %H:%i:%S') as begin_assign_time,
+		date_format(fp.complete_time,'%Y-%m-%d %H:%i:%S') as complete_time1/*兑付日*/
+		FROM
+		finance_urgent_quit fuq LEFT JOIN finance_package fp on fuq.package_id=fp.id
+		WHERE
+		fp.package_type =5
+		<if test="pageVo!=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.fnPackId!=null">
+					AND fuq.package_id = #{pageVo.parameters.fnPackId,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.user_id!=null">
+					and fuq.user_id <![CDATA[=]]> #{pageVo.parameters.user_id,jdbcType=VARCHAR}
+				</if>
+				<if test="pageVo.parameters.package_name!=null">
+					and fuq.package_name like CONCAT(#{pageVo.parameters.package_name,jdbcType=VARCHAR} )
+				</if>
+			</if>
+		</if>
+
+
+	</select>
+
+	<select id="searchFinanceAborting" resultType="map">
+		SELECT
+		DATE_FORMAT(fuq.begin_quit_time,"%Y-%m-%d %H:%i:%s") as beginQuitTime,
+		fuq.id as quitId,
+		fuq.package_id as packageId,
+		fuq.package_name as packageName,
+		ROUND(fuq.join_money,2) as joinMoney,
+		ROUND(fuq.quit_interest,2) as quitInterest,
+		ROUND(fuq.quit_charge,2) as quitCharge,
+		ROUND (
+		fuq.cashed_money,
+		2
+		) AS expectMoney,
+		fuq.cashed_state as cashState,
+		CASE
+		when fuq.quit_state=1 then 1
+		when fuq.quit_state in(2,3) then 0
+		END
+		as state,
+		ROUND(fuq.quit_rate,2) as quitRate,
+		fuq.owned_days as ownedDays,
+		DATE_FORMAT(fuq.expect_end_time,"%Y-%m-%d %H:%i:%s") expect_end_time,
+		fuq.user_id,
+		fp.is_org
+		FROM
+		finance_urgent_quit fuq
+		LEFT JOIN finance_package fp ON fuq.package_id =fp.id
+		WHERE
+		fp.package_type !=5
+		and fuq.quit_state !=0 and fuq.cashed_state=0
+		<if test="pageVo!=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.fnPackId!=null">
+					AND fuq.package_id = #{pageVo.parameters.fnPackId,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.user_id!=null">
+					and fuq.user_id <![CDATA[=]]> #{pageVo.parameters.user_id,jdbcType=VARCHAR}
+				</if>
+				<if test="pageVo.parameters.package_name!=null">
+					and fuq.package_name like CONCAT(#{pageVo.parameters.package_name,jdbcType=VARCHAR} )
+				</if>
+			</if>
+		</if>
+
+
+	</select>
+
+	<select id="searchFinanceExited" resultType="map">
+		SELECT
+		finance_package.`name` as package_name,/*标题*/
+		finance_package.id as package_id ,/*荷包编号*/
+		ROUND(sum(finance_invest.deal_amount),2) as deal_amount,/*有效投资金额*/
+		ROUND(sum(finance_invest.deal_amount*(finance_package.reward_rate/100/12*finance_package.`issue`)),2) AS expect_reward, -- 奖励
+		ROUND(IFNULL(fuq.quit_interest,finance_account.real_repay_interest),2) as interest, -- 已收利息
+		IFNULL(finance_package.lock_issue,finance_package.lock_issue) as lock_issue,-- 锁定期限
+		IFNULL(fuq.cashed_state,1) as cashed_state,
+		finance_package.issue,
+		date_format(IFNULL(fuq.cashed_time,finance_package.complete_time),'%Y-%m-%d %H:%i:%s') as end_quit_time,   -- 退出时间
+		if(fuq.begin_quit_time is null,3,quit_type) as quit_type,
+		DATE_FORMAT(finance_package.expect_end_time,'%Y-%m-%d %H:%i:%s') as expect_end_time
+		FROM
+		finance_package AS finance_package left join
+		finance_invest as finance_invest on finance_invest.package_id = finance_package.id
+		LEFT JOIN (select quit_state,cashed_state,package_id,user_id,begin_quit_time,quit_interest,quit_type,owned_days,cashed_money,end_quit_time,cashed_time from finance_urgent_quit where user_id = #{pageVo.parameters.userId,jdbcType=VARCHAR} and quit_state!=0
+		order by begin_quit_time desc) as fuq on finance_invest.package_id =fuq.package_id and finance_invest.user_id=fuq.user_id
+		LEFT JOIN finance_account ON (finance_invest.package_id=finance_account.package_id and finance_invest.user_id_num=finance_account.user_id_num)
+		where
+		((fuq.quit_state in(2,3) and fuq.cashed_state=1) or  finance_package.state=35) and finance_package.package_type!=5
+		<if test="pageVo !=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.user_id !=null">
+					and finance_invest.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.fnPackId!=null">
+					and finance_package.id =  #{pageVo.parameters.fnPackId,jdbcType=INTEGER}
+				</if>
+				<if test="pageVo.parameters.package_name!=null">
+					and finance_package.name like CONCAT(#{pageVo.parameters.package_name,jdbcType=VARCHAR} )
+				</if>
+			</if>
+		</if>
+		group by finance_invest.package_id
+		order by finance_invest.create_time desc
+	</select>
+
+	<select id="queryAssetRemainMoney" resultType="map">
+		SELECT
+		round(
+		(
+		(
+		b.`remain_principal` * a.`quota`
+		) / b.`money` / 100
+		),
+		2
+		) AS `remain_principal`,
+		b.bid_name bidName
+		FROM
+		Asset a
+		LEFT JOIN Invest i ON a.invest_id = i.action_sn
+		LEFT JOIN AssetBuy ab ON a.invest_id = ab.action_sn
+		LEFT JOIN BidDocument b ON a.bid_id=b.bid_id
+		WHERE
+		b.state = 10
+		AND b.for_package = 0
+		AND a.state = 0
+		AND a.bid_id =#{pageVo.parameters.bid_id,jdbcType=INTEGER}
+		AND a.asset_id =#{pageVo.parameters.asset_id,jdbcType=INTEGER}
+		ORDER BY
+		a.creat_time DESC
+	</select>
+
+	<select id="rewardRecord" resultType="map">
+		SELECT
+		ROUND(ifnull(SUM(reward),0), 2) AS reward
+		FROM
+		RewardPlan
+		WHERE
+		user_id_num =#{pageVo.parameters.user_id,jdbcType=INTEGER}
+		AND bid_id =#{pageVo.parameters.package_id,jdbcType=TINYINT}
+		AND reward_type IN (2, 3)
+		AND state = 2
+	</select>
+
+	<select id="queryBidAlreayGathering" resultType="map">
+		SELECT/*TO_COUNT*/
+		`Income`.`user_id` AS `user_id`,
+		DATE_FORMAT(`Income`.`ts_income`,"%Y-%m-%d %H:%i:%s") AS `ts_income`,
+		`Income`.`type` AS `income_type`,
+		`BidDocument`.`bid_id` AS bid_id,
+		`BidDocument`.`bid_name` AS `bid_name`,
+		`BidDocument`.`duration` AS `bid_duration`,
+		`BidDocument`.`repayment_type` AS `bid_repayment_type`,
+		`Income`.`issue` AS `income_issue`,
+		ROUND(IFNULL(`Income`.`principal`,0),2) AS
+		`income_principal`,
+		ROUND(IFNULL(`Income`.`interest`,0),2) AS `income_interest`,
+		ROUND(IFNULL(`Income`.`reward`,0),2) AS `income_reward`,
+		`Income`.`overdue_day` AS `overdue_day`,
+		IFNULL(`Income`.`overdue_interest`,0) AS `income_overdue_interest`,
+		IFNULL(`Income`.`liquidated_damages`,0) AS `liquidated_damages`
+		FROM
+		(
+		`Income`
+		JOIN `BidDocument` ON (
+		(
+		`Income`.`bid_ID` =
+		`BidDocument`.`bid_id`
+		and Income.package_id is null
+		)
+		)
+		)
+		<trim prefix="where" prefixOverrides="and ">
+			<if test="pageVo !=null">
+				<if test="pageVo.parameters!=null">
+					and Income.package_id is null
+					<if test="pageVo.parameters.bid_id!=null">
+						and `Income`.`bid_ID` = #{pageVo.parameters.bid_id,jdbcType=INTEGER}
+					</if>
+				</if>
+
+				<if test="pageVo.parameters!=null">
+					<if test="pageVo.parameters.user_id!=null">
+						and Income.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+					</if>
+				</if>
+
+				<if test="pageVo.parameters!=null">
+					<if test="pageVo.parameters.income_type!=null">
+						and Income.type = #{pageVo.parameters.income_type,jdbcType=INTEGER}
+					</if>
+				</if>
+
+				<if test="pageVo.parameters!=null">
+					<if test="pageVo.parameters.invest_id!=null">
+						and Income.invest_id = #{pageVo.parameters.invest_id,jdbcType=INTEGER}
+					</if>
+				</if>
+			</if>
+		</trim>
+
+	</select>
+
+	<select id="financeMonthReturnInterest" resultType="map">
+		SELECT
+		ROUND(mp.principal,2) as packagePrincipal,
+		ROUND(mp.interest,2) as packageInterest,
+		DATE_FORMAT(
+		mp.repay_day,
+		'%m'
+		) as month
+		FROM
+		month_pay_package_plan mp
+		INNER JOIN finance_package financePackage
+		ON mp.package_id = financePackage.id
+		WHERE mp.user_id_num = #{pageVo.parameters.user_id,jdbcType=INTEGER}
+		AND mp.state=0 AND DATE_FORMAT(
+		mp.repay_day,
+		'%Y'
+		) = #{pageVo.parameters.year,jdbcType=INTEGER}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Dao 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hexin.mapper.hexin6.AssetSaleMapper">
+	<resultMap id="BaseResultMap" type="com.hexin.domain.hexin6.AssetSale">
+		<id column="action_sn" property="actionSn" jdbcType="INTEGER" />
+		<result column="asset_id" property="assetId" jdbcType="INTEGER" />
+		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="quota" property="quota" jdbcType="DECIMAL" />
+		<result column="min_money" property="minMoney" jdbcType="DECIMAL" />
+		<result column="attorn_fee_rate" property="attornFeeRate" jdbcType="DECIMAL" />
+		<result column="attorn_fee" property="attornFee" jdbcType="DECIMAL" />
+		<result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="invalid" property="invalid" jdbcType="TINYINT" />
+		<result column="saled_times" property="saledTimes" jdbcType="INTEGER" />
+		<result column="remain_principal" property="remainPrincipal" jdbcType="DECIMAL" />
+		<result column="remain_interest" property="remainInterest" jdbcType="DECIMAL" />
+		<result column="remain_reward" property="remainReward" jdbcType="DECIMAL" />
+		<result column="remain_issue" property="remainIssue" jdbcType="INTEGER" />
+		<result column="sale_money" property="saleMoney" jdbcType="DECIMAL" />
+		<result column="ts_submit" property="tsSubmit" jdbcType="TIMESTAMP" />
+		<result column="remain_plus_rate" property="remainPlusRate" jdbcType="DECIMAL" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="user_id_num" property="userIdNum" jdbcType="INTEGER" />
+		<result column="state" property="state" jdbcType="INTEGER" />
+		<result column="bid_id" property="bidId" jdbcType="INTEGER" />
+		<result column="receivable_interest" property="receivableInterest" jdbcType="DECIMAL" />
+	    <result column="interest_fee" property="interestFee" jdbcType="DECIMAL" />
+	    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		action_sn, asset_id, price, quota, min_money, attorn_fee_rate, attorn_fee, start_time,
+		end_time, invalid, saled_times, remain_principal, remain_interest, remain_reward,
+		remain_issue, sale_money, ts_submit, remain_plus_rate, user_id, user_id_num, state, bid_id,receivable_interest,interest_fee
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from AssetSale
+		where action_sn = #{actionSn,jdbcType=INTEGER} and invalid = 0
+	</select>
+	<!-- 查询 -->
+	<select id="selectByActionAndInvalid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from AssetSale
+		where asset_id = #{assetId,jdbcType=INTEGER} and invalid = 0
+	</select>
+
+	<insert id="insert" parameterType="com.hexin.domain.hexin6.AssetSale">
+		insert into AssetSale (action_sn, asset_id, price,
+		quota, min_money, attorn_fee_rate,
+		attorn_fee, start_time, end_time,
+		invalid, saled_times, remain_principal,
+		remain_interest, remain_reward, remain_issue,
+		sale_money,ts_submit,ts_submit_minus
+		<if test="remainPlusRate != null">
+			, remain_plus_rate
+		</if>
+		<if test="userId != null">
+			, user_id
+		</if>
+		<if test="userIdNum != null">
+			, user_id_num
+		</if>
+		<if test="state != null">
+			, state
+		</if>
+		<if test="bidId != null">
+			, bid_id
+		</if>
+		<if test="receivableInterest != null">
+			, receivable_interest
+		</if>
+		<if test="interestFee != null">
+			, interest_fee
+		</if>
+		)
+		values (#{actionSn,jdbcType=INTEGER}, #{assetId,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL},
+		#{quota,jdbcType=DECIMAL}, #{minMoney,jdbcType=DECIMAL}, #{attornFeeRate,jdbcType=DECIMAL},
+		#{attornFee,jdbcType=DECIMAL}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
+		#{invalid,jdbcType=TINYINT}, #{saledTimes,jdbcType=INTEGER}, #{remainPrincipal,jdbcType=DECIMAL},
+		#{remainInterest,jdbcType=DECIMAL}, #{remainReward,jdbcType=DECIMAL}, #{remainIssue,jdbcType=INTEGER},
+		#{saleMoney,jdbcType=DECIMAL}, #{tsSubmit,jdbcType=TIMESTAMP},TIMESTAMPDIFF(MINUTE,#{tsSubmit,jdbcType=TIMESTAMP},'2099-01-01 00:00:00')
+		<if test="remainPlusRate != null">
+			, #{remainPlusRate,jdbcType=DECIMAL}
+		</if>
+		<if test="userId != null">
+			, #{userId,jdbcType=VARCHAR}
+		</if>
+		<if test="userIdNum != null">
+			, #{userIdNum,jdbcType=INTEGER}
+		</if>
+		<if test="state != null">
+			, #{state,jdbcType=INTEGER}
+		</if>
+		<if test="bidId != null">
+			, #{bidId,jdbcType=INTEGER}
+		</if>
+		<if test="receivableInterest != null">
+			, #{receivableInterest,jdbcType=DECIMAL}
+		</if>
+		<if test="interestFee != null">
+			, #{interestFee,jdbcType=DECIMAL}
+		</if>
+		)
+	</insert>
+	 
+	<update id="updateByPrimaryKeySelective" parameterType="com.hexin.domain.hexin6.AssetSale">
+		update AssetSale
+		<set>
+			<if test="assetId != null">
+				asset_id = #{assetId,jdbcType=INTEGER},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=DECIMAL},
+			</if>
+			<if test="quota != null">
+				quota = #{quota,jdbcType=DECIMAL},
+			</if>
+			<if test="minMoney != null">
+				min_money = #{minMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="attornFeeRate != null">
+				attorn_fee_rate = #{attornFeeRate,jdbcType=DECIMAL},
+			</if>
+			<if test="attornFee != null">
+				attorn_fee = #{attornFee,jdbcType=DECIMAL},
+			</if>
+			<if test="startTime != null">
+				start_time = #{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				end_time = #{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="invalid != null">
+				invalid = #{invalid,jdbcType=TINYINT},
+			</if>
+			<if test="saledTimes != null">
+				saled_times = #{saledTimes,jdbcType=INTEGER},
+			</if>
+			<if test="remainPrincipal != null">
+				remain_principal = #{remainPrincipal,jdbcType=DECIMAL},
+			</if>
+			<if test="remainInterest != null">
+				remain_interest = #{remainInterest,jdbcType=DECIMAL},
+			</if>
+			<if test="remainReward != null">
+				remain_reward = #{remainReward,jdbcType=DECIMAL},
+			</if>
+			<if test="remainIssue != null">
+				remain_issue = #{remainIssue,jdbcType=INTEGER},
+			</if>
+			<if test="saleMoney != null">
+				sale_money = #{saleMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="remainPlusRate != null">
+				remain_plus_rate = #{remainPlusRate,jdbcType=DECIMAL},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="userIdNum != null">
+				user_id_num = #{userIdNum,jdbcType=INTEGER},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=INTEGER},
+			</if>
+			<if test="bidId != null">
+				bid_id = #{bidId,jdbcType=INTEGER},
+			</if>
+			<if test="receivableInterest != null">
+				receivable_interest = #{receivableInterest,jdbcType=DECIMAL},
+			</if>
+			<if test="interestFee != null">
+				interest_fee = #{interestFee,jdbcType=DECIMAL},
+			</if>
+		</set>
+		where action_sn = #{actionSn,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 根据原值更新 -->
+	<update id="updateByOldValue" parameterType="map">
+		update AssetSale
+		<set>
+			<if test="newAsset.assetId != null">
+				asset_id = #{newAsset.assetId,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.price != null">
+				price = #{newAsset.price,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.quota != null">
+				quota = #{newAsset.quota,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.minMoney != null">
+				min_money = #{newAsset.minMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.attornFeeRate != null">
+				attorn_fee_rate = #{newAsset.attornFeeRate,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.attornFee != null">
+				attorn_fee = #{newAsset.attornFee,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.startTime != null">
+				start_time = #{newAsset.startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="newAsset.endTime != null">
+				end_time = #{newAsset.endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="newAsset.invalid != null">
+				invalid = #{newAsset.invalid,jdbcType=TINYINT},
+			</if>
+			<if test="newAsset.saledTimes != null">
+				saled_times = #{newAsset.saledTimes,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.remainPrincipal != null">
+				remain_principal = #{newAsset.remainPrincipal,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.remainInterest != null">
+				remain_interest = #{newAsset.remainInterest,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.remainReward != null">
+				remain_reward = #{newAsset.remainReward,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.remainIssue != null">
+				remain_issue = #{newAsset.remainIssue,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.saleMoney != null">
+				sale_money = #{newAsset.saleMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.remainPlusRate != null">
+				remain_plus_rate = #{newAsset.remainPlusRate,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.userId != null">
+				user_id = #{newAsset.userId,jdbcType=VARCHAR},
+			</if>
+			<if test="newAsset.userIdNum != null">
+				user_id_num = #{newAsset.userIdNum,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.state != null">
+				state = #{newAsset.state,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.bidId != null">
+				bid_id = #{newAsset.bidId,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.receivableInterest != null">
+				receivable_interest = #{newAsset.receivableInterest,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.interestFee != null">
+				interest_fee = #{newAsset.interestFee,jdbcType=DECIMAL},
+			</if>
+			 <if test="newAsset.updateTime!= null">
+				update_time = #{newAsset.updateTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		where 1=1 
+		<if test="null!=oldAsset">
+			<if test="oldAsset.actionSn!=null">
+				and action_sn = #{oldAsset.actionSn,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.assetId != null">
+				and asset_id = #{oldAsset.assetId,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.price != null">
+				and price = #{oldAsset.price,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.quota != null">
+				and quota = #{oldAsset.quota,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.minMoney != null">
+				and min_money = #{oldAsset.minMoney,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.attornFeeRate != null">
+				and attorn_fee_rate = #{oldAsset.attornFeeRate,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.attornFee != null">
+				and attorn_fee = #{oldAsset.attornFee,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.startTime != null">
+				and start_time = #{oldAsset.startTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="oldAsset.endTime != null">
+				and end_time = #{oldAsset.endTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="oldAsset.invalid != null">
+				and invalid = #{oldAsset.invalid,jdbcType=TINYINT}
+			</if>
+			<if test="oldAsset.saledTimes != null">
+				and saled_times = #{oldAsset.saledTimes,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.remainPrincipal != null">
+				and remain_principal = #{oldAsset.remainPrincipal,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.remainInterest != null">
+				and remain_interest = #{oldAsset.remainInterest,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.remainReward != null">
+				and remain_reward = #{oldAsset.remainReward,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.remainIssue != null">
+				and remain_issue = #{oldAsset.remainIssue,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.saleMoney != null">
+				and sale_money = #{oldAsset.saleMoney,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.remainPlusRate != null">
+				and remain_plus_rate = #{oldAsset.remainPlusRate,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.userId != null">
+				and user_id = #{oldAsset.userId,jdbcType=VARCHAR}
+			</if>
+			<if test="oldAsset.userIdNum != null">
+				and user_id_num = #{oldAsset.userIdNum,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.state != null">
+				and state = #{oldAsset.state,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.bidId != null">
+				and bid_id = #{oldAsset.bidId,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.receivableInterest != null">
+				and receivable_interest = #{oldAsset.receivableInterest,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.interestFee != null">
+				and interest_fee = #{oldAsset.interestFee,jdbcType=DECIMAL}
+			</if>
+		</if>
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="com.hexin.domain.hexin6.AssetSale">
+		update AssetSale
+		set asset_id = #{assetId,jdbcType=INTEGER},
+		price = #{price,jdbcType=DECIMAL},
+		quota = #{quota,jdbcType=DECIMAL},
+		min_money = #{minMoney,jdbcType=DECIMAL},
+		attorn_fee_rate = #{attornFeeRate,jdbcType=DECIMAL},
+		attorn_fee = #{attornFee,jdbcType=DECIMAL},
+		start_time = #{startTime,jdbcType=TIMESTAMP},
+		end_time = #{endTime,jdbcType=TIMESTAMP},
+		invalid = #{invalid,jdbcType=TINYINT},
+		saled_times = #{saledTimes,jdbcType=INTEGER},
+		remain_principal = #{remainPrincipal,jdbcType=DECIMAL},
+		remain_interest = #{remainInterest,jdbcType=DECIMAL},
+		remain_reward = #{remainReward,jdbcType=DECIMAL},
+		remain_issue = #{remainIssue,jdbcType=INTEGER},
+		sale_money = #{saleMoney,jdbcType=DECIMAL},
+		remain_plus_rate = #{remainPlusRate,jdbcType=DECIMAL},
+		user_id = #{userIdNum,jdbcType=VARCHAR},
+		user_id_num = #{userIdNum,jdbcType=INTEGER},
+		state = #{state,jdbcType=INTEGER},
+		bid_id = #{bidId,jdbcType=INTEGER}
+		where action_sn = #{actionSn,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 获取正在转让的资产 -->
+	<select id="fetchAssetSaling" resultType="com.hexin.domain.hexin6.AssetSale" parameterType="Map">
+		select `AssetSale`.`asset_id` AS `assetId`,`AssetSale`.`end_time` AS `endTime`,AssetSale.bid_id as bidId,AssetSale.user_id_num as userIdNum
+		from `AssetSale`  left join `Asset` on `Asset`.`asset_id` = `AssetSale`.`asset_id`
+		where `Asset`.`state` = 1	
+		<if test="_parameter.containsKey('startTime') and _parameter.containsKey('endTime')">
+			and (end_time between #{startTime,jdbcType=TIMESTAMP} and #{endTime,jdbcType=TIMESTAMP})
+		</if>
+	</select>
+	
+	<select id="fetchAssetSale" resultType="java.util.Map" parameterType="java.lang.String">
+		SELECT
+		temp_aasset_info.user_id AS 'user_id',
+		ifnull(sum(AssetSale.price),0) AS 'price_sum'
+		FROM
+		AssetSale
+		LEFT JOIN Asset as temp_aasset_info ON temp_aasset_info.asset_id =
+		AssetSale.asset_id
+		JOIN BidDocument ON temp_aasset_info.bid_id = BidDocument.bid_id
+		where temp_aasset_info.user_id = #{userId,jdbcType=VARCHAR}
+		AND temp_aasset_info.state = 1
+		AND temp_aasset_info.fn_is_package = 0
+	</select>
+	<!-- 查询理财包内正在转让的债权 -->
+	<select id="selectAssetSaling" resultType="map">
+		 select asset.bid_id,sale.price from AssetSale sale 
+		 left join Asset asset on sale.asset_id = asset.asset_id
+ 		where fn_is_package=1 and invalid=1 group by asset.bid_id;
+	</select>
+	
+	<!-- 查询成交转让交易总金额 -->
+	<select id="getAllAssetSaleMoney" resultType="map">
+		SELECT 
+			IFNULL(sum(AssetSale.price), 0) as 'price_sum' 
+		FROM 
+			AssetSale 
+		LEFT JOIN 
+			Asset as temp_aasset_info 
+		ON temp_aasset_info.asset_id = AssetSale.asset_id 
+		JOIN 
+			BidDocument 
+		ON temp_aasset_info.bid_id = BidDocument.bid_id
+		AND (AssetSale.start_time <![CDATA[<]]>  #{endDate})
+	</select>
+
+	<select id="getNewAssetSaleMoney" resultType="map">
+		SELECT
+		IFNULL(SUM(sale.price), 0) as 'price_sum'
+		FROM
+		AssetBuy AS buy
+		LEFT JOIN
+		Asset as old_asset ON old_asset.asset_id = buy.asset_id
+		LEFT JOIN
+		AssetSale AS sale ON old_asset.asset_id = sale.asset_id AND old_asset.state = 2
+		LEFT JOIN
+		BidDocument as bid ON bid.bid_id = old_asset.bid_id
+		where bid.`for_package` = 0
+		and buy.`ts_submit` <![CDATA[<=]]>  #{endDate} and  buy.`ts_submit` >= #{startDate};
+	</select>
+	
+	<!-- 查询昨日成交转让交易总金额 -->
+	<select id="getLastDaySaleMoney" resultType="map">
+		SELECT
+			IFNULL(sum(AssetSale.price), 0) AS 'price_sum'
+		FROM
+			AssetSale
+		LEFT JOIN Asset AS temp_aasset_info 
+		ON temp_aasset_info.asset_id = AssetSale.asset_id
+		and temp_aasset_info.`fn_is_package` = 0 
+		JOIN BidDocument ON temp_aasset_info.bid_id = BidDocument.bid_id
+		WHERE
+			AssetSale.ts_submit >= #{startDate}
+		AND AssetSale.ts_submit <![CDATA[<=]]>  #{endDate}
+	</select>
+</mapper>

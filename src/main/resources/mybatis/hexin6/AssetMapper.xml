@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Dao 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hexin.mapper.hexin6.AssetMapper">
+	<resultMap id="BaseResultMap" type="com.hexin.domain.hexin6.Asset" >
+    <id column="asset_id" property="assetId" jdbcType="INTEGER" />
+    <result column="invest_id" property="investId" jdbcType="INTEGER" />
+    <result column="bid_id" property="bidId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="quota" property="quota" jdbcType="DECIMAL" />
+    <result column="sale" property="sale" jdbcType="DECIMAL" />
+    <result column="creat_time" property="creatTime" jdbcType="TIMESTAMP" />
+    <result column="interest_fee_rate" property="interestFeeRate" jdbcType="DECIMAL" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="fn_is_package" property="fnIsPackage" jdbcType="INTEGER" />
+    <result column="fn_package_id" property="fnPackageId" jdbcType="INTEGER" />
+    <result column="fn_backend_id" property="fnBackEndId" jdbcType="INTEGER" />
+    <result column="user_id_num" property="userIdNum" jdbcType="INTEGER" />
+	<result column="plat_form_sn" property="platFormSn" jdbcType="VARCHAR" />
+	<result column="pay_interest" property="payInterest" jdbcType="DECIMAL" />
+	<result column="pre_trade_amount" property="preTradeAmount" jdbcType="DECIMAL"/>
+	<result column="remain_principal" property="remainPrincipal" jdbcType="DECIMAL"/>
+	<result column="receivable_interest" property="receivableInterest" jdbcType="DECIMAL"/>
+	<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    asset_id, invest_id, bid_id, user_id, type, quota, sale, creat_time, interest_fee_rate, 
+    state, fn_is_package, fn_package_id,fn_backend_id, user_id_num,plat_form_sn,pay_interest,pre_trade_amount,remain_principal,receivable_interest,update_time
+  </sql>
+  
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		where asset_id = #{assetId,jdbcType=INTEGER}
+	</select>
+
+	
+	<insert id="insert" parameterType="com.hexin.domain.hexin6.Asset" useGeneratedKeys="true" keyProperty="assetId">
+    insert into Asset (asset_id, invest_id, bid_id, 
+      user_id, type, quota, 
+      sale, creat_time, interest_fee_rate, 
+      state, fn_is_package, fn_package_id,fn_backend_id, user_id_num,plat_form_sn,pay_interest,pre_trade_amount,remain_principal,receivable_interest
+      )
+    values (#{assetId,jdbcType=INTEGER}, #{investId,jdbcType=INTEGER}, #{bidId,jdbcType=INTEGER}, 
+      #{userId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{quota,jdbcType=DECIMAL}, 
+      #{sale,jdbcType=DECIMAL}, #{creatTime,jdbcType=TIMESTAMP}, #{interestFeeRate,jdbcType=DECIMAL}, 
+      #{state,jdbcType=INTEGER}, #{fnIsPackage,jdbcType=INTEGER}, #{fnPackageId,jdbcType=INTEGER},
+       #{fnBackEndId,jdbcType=INTEGER}, #{userIdNum,jdbcType=INTEGER},#{platFormSn,jdbcType=VARCHAR},#{payInterest,jdbcType=DECIMAL}
+       ,#{preTradeAmount,jdbcType=DECIMAL},#{remainPrincipal,jdbcType=DECIMAL},#{receivableInterest,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hexin.domain.hexin6.Asset" >
+    insert into Asset
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="assetId != null" >
+        asset_id,
+      </if>
+      <if test="investId != null" >
+        invest_id,
+      </if>
+      <if test="bidId != null" >
+        bid_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="quota != null" >
+        quota,
+      </if>
+      <if test="sale != null" >
+        sale,
+      </if>
+      <if test="creatTime != null" >
+        creat_time,
+      </if>
+      <if test="interestFeeRate != null" >
+        interest_fee_rate,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="fnIsPackage != null" >
+        fn_is_package,
+      </if>
+      <if test="fnPackageId != null" >
+        fn_package_id,
+      </if>
+      <if test="userIdNum != null" >
+        user_id_num,
+      </if>
+      <if test="remainPrincipal != null" >
+        remain_principal,
+      </if>
+      <if test="receivableInterest != null" >
+        receivable_interest,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="assetId != null" >
+        #{assetId,jdbcType=INTEGER},
+      </if>
+      <if test="investId != null" >
+        #{investId,jdbcType=INTEGER},
+      </if>
+      <if test="bidId != null" >
+        #{bidId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="quota != null" >
+        #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="sale != null" >
+        #{sale,jdbcType=DECIMAL},
+      </if>
+      <if test="creatTime != null" >
+        #{creatTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="interestFeeRate != null" >
+        #{interestFeeRate,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="fnIsPackage != null" >
+        #{fnIsPackage,jdbcType=INTEGER},
+      </if>
+      <if test="fnPackageId != null" >
+        #{fnPackageId,jdbcType=INTEGER},
+      </if>
+      <if test="userIdNum != null" >
+        #{userIdNum,jdbcType=INTEGER},
+      </if>
+      <if test="remainPrincipal != null" >
+        #{remainPrincipal,jdbcType=DECIMAL},
+      </if>
+      <if test="receivableInterest != null" >
+        #{receivableInterest,jdbcType=DECIMAL},
+      </if>   
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=DATE},
+      </if>         
+    </trim>
+  </insert>
+	 <update id="updateByPrimaryKeySelective" parameterType="com.hexin.domain.hexin6.Asset" >
+    update Asset
+    <set >
+      <if test="investId != null" >
+        invest_id = #{investId,jdbcType=INTEGER},
+      </if>
+      <if test="bidId != null" >
+        bid_id = #{bidId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="quota != null" >
+        quota = #{quota,jdbcType=DECIMAL},
+      </if>
+      <if test="sale != null" >
+        sale = #{sale,jdbcType=DECIMAL},
+      </if>
+      <if test="creatTime != null" >
+        creat_time = #{creatTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="interestFeeRate != null" >
+        interest_fee_rate = #{interestFeeRate,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="fnIsPackage != null" >
+        fn_is_package = #{fnIsPackage,jdbcType=INTEGER},
+      </if>
+      <if test="fnPackageId != null" >
+        fn_package_id = #{fnPackageId,jdbcType=INTEGER},
+      </if>
+      <if test="userIdNum != null" >
+        user_id_num = #{userIdNum,jdbcType=INTEGER},
+      </if>
+	  <if test="payInterest != null" >
+		  pay_interest = #{payInterest,jdbcType=DECIMAL},
+	  </if>
+		<if test="preTradeAmount != null" >
+			pre_trade_amount = #{preTradeAmount,jdbcType=DECIMAL},
+		</if>
+    </set>
+    where asset_id = #{assetId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hexin.domain.hexin6.Asset" >
+    update Asset
+    set invest_id = #{investId,jdbcType=INTEGER},
+      bid_id = #{bidId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      quota = #{quota,jdbcType=DECIMAL},
+      sale = #{sale,jdbcType=DECIMAL},
+      creat_time = #{creatTime,jdbcType=TIMESTAMP},
+      interest_fee_rate = #{interestFeeRate,jdbcType=DECIMAL},
+      state = #{state,jdbcType=INTEGER},
+      fn_is_package = #{fnIsPackage,jdbcType=INTEGER},
+      fn_package_id = #{fnPackageId,jdbcType=INTEGER},
+      user_id_num = #{userIdNum,jdbcType=INTEGER}
+    where asset_id = #{assetId,jdbcType=INTEGER}
+  </update>
+	<!-- 根据资产Id与状态停止售卖 -->
+	<update id="stopAssetSale" parameterType="com.hexin.domain.hexin6.Asset">
+	update Asset
+	set state = #{state,jdbcType=INTEGER},
+	sale = #{sale,jdbcType=DECIMAL}
+	where asset_id = #{assetId,jdbcType=INTEGER} and state = 1
+	</update>
+	<!-- 根据标的ID查询出所有的资产 -->
+	<select id="selectByBid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		where bid_id = #{bidId,jdbcType=INTEGER}
+	</select>
+	<!-- 根据标的ID查询出所有的资产 -->
+	<select id="selectEffectAssetByBid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and state = 0
+	</select>
+	<select id="selectByAssetIAndState" resultType="int" parameterType="int">
+	    select 
+	       count(0)
+	     from 
+	        Asset
+	      where invest_id =#{invest_id} and state =#{state}
+	</select>
+	<!-- 根据原值更新 -->
+	<update id="updateAssetByOld" parameterType="map">
+		update Asset
+		<set>
+			<if test="newAsset.investId != null">
+				invest_id = #{newAsset.investId,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.bidId != null">
+				bid_id = #{newAsset.bidId,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.userId != null">
+				user_id = #{newAsset.userId,jdbcType=VARCHAR},
+			</if>
+			<if test="newAsset.type != null">
+				type = #{newAsset.type,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.quota != null">
+				quota = #{newAsset.quota,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.sale != null">
+				sale = #{newAsset.sale,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.creatTime != null">
+				creat_time = #{newAsset.creatTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="newAsset.interestFeeRate != null">
+				interest_fee_rate = #{newAsset.interestFeeRate,jdbcType=DECIMAL},
+			</if>
+			<if test="newAsset.state != null">
+				state = #{newAsset.state,jdbcType=INTEGER},
+			</if>
+			<if test="newAsset.userIdNum != null" >
+		        user_id_num = #{newAsset.userIdNum,jdbcType=INTEGER},
+		    </if>
+			<if test="newAsset.payInterest != null" >
+				pay_interest = #{newAsset.payInterest,jdbcType=DECIMAL},
+			</if>
+	      <if test="newAsset.remainPrincipal != null" >
+	       remain_principal =  #{newAsset.remainPrincipal,jdbcType=DECIMAL},
+	      </if>
+	      <if test="newAsset.receivableInterest != null" >
+	        receivable_interest = #{newAsset.receivableInterest,jdbcType=DECIMAL},
+	      </if>  
+			<if test="newAsset.updateTime != null">
+				update_time = #{newAsset.updateTime,jdbcType=TIMESTAMP},
+			</if>	       			
+		</set>
+		where asset_id = #{oldAsset.assetId,jdbcType=INTEGER}
+		<if test="oldAsset!=null">
+			<if test="oldAsset.investId != null">
+				and invest_id = #{oldAsset.investId,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.bidId != null">
+				and bid_id = #{oldAsset.bidId,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.userId != null">
+				and user_id = #{oldAsset.userId,jdbcType=VARCHAR}
+			</if>
+			<if test="oldAsset.type != null">
+				and type = #{oldAsset.type,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.quota != null">
+				and quota = #{oldAsset.quota,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.sale != null">
+				and sale = #{oldAsset.sale,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.creatTime != null">
+				and creat_time = #{oldAsset.creatTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="oldAsset.interestFeeRate != null">
+				and interest_fee_rate = #{oldAsset.interestFeeRate,jdbcType=DECIMAL}
+			</if>
+			<if test="oldAsset.state != null">
+				and state = #{oldAsset.state,jdbcType=INTEGER}
+			</if>
+			<if test="oldAsset.userIdNum != null" >
+		        and user_id_num = #{oldAsset.userIdNum,jdbcType=INTEGER}
+		    </if>
+			<if test="oldAsset.payInterest != null" >
+			and 	pay_interest = #{oldAsset.payInterest,jdbcType=DECIMAL}
+			</if>
+	      <if test="oldAsset.remainPrincipal != null" >
+	        and remain_principal = #{oldAsset.remainPrincipal,jdbcType=DECIMAL}
+	      </if>
+	      <if test="oldAsset.receivableInterest != null" >
+	        and receivable_interest = #{oldAsset.receivableInterest,jdbcType=DECIMAL}
+	      </if>   	
+			<if test="oldAsset.updateTime != null">
+				update_time = #{oldAsset.updateTime,jdbcType=DATE}
+			</if>	  	      		
+		</if>
+	</update>
+	<select id="selectByUserId" parameterType="String" resultType="int">
+	   select 
+	      count(1)
+	   from 
+	      Asset
+	   where 
+	      user_id = #{userId}
+	</select>
+	
+	<select id="fetchIncomeAsset" resultType="java.util.Map" parameterType="java.lang.String">
+		SELECT
+		  `Asset`.`user_id`              AS `user_id`,
+		  ifnull(sum(ROUND(((`Repayplan`.`principal` * `Asset`.`quota`) / `BidDocument`.`money`/100),2)),0) AS `income_principal`,
+		  ifnull(sum(ROUND(((`Repayplan`.`interest` * `Asset`.`quota`) / `BidDocument`.`money`/100),2)),0) AS `income_interest`
+		FROM ((`Asset`
+		    JOIN `BidDocument`
+		      ON ((`Asset`.`bid_id` = `BidDocument`.`bid_id`)))
+		   JOIN `Repayplan`
+		     ON ((`Asset`.`bid_id` = `Repayplan`.`bid_id`)))
+		WHERE ((`Asset`.`state` = 0)
+		       AND (`Repayplan`.`repay_type` = 0)
+		       AND (`Repayplan`.`repayday` >= `Asset`.`creat_time`))	
+			   AND 	`Asset`.`user_id` = #{userId,jdbcType=VARCHAR}
+			   AND `Repayplan`.`state` = 0
+			   AND `BidDocument`.`for_package` = 0
+	</select>
+	
+    <!-- 根据标的ID、用户id、投资id查询资产信息-->
+	<select id="getAssetByBidIdUserIdInvestId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		where bid_id = #{bidId,jdbcType=INTEGER} and user_id = #{userId,jdbcType=INTEGER} and invest_id = #{investId,jdbcType=INTEGER} 
+		GROUP BY invest_id 
+	</select>
+	
+	
+	<!--根据理财包id，用户id查询资产信息 (查询理财包中用户持的未转让资产)-->
+	<select id="getAssetByUserIdPackageId" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from Asset
+		where user_id = #{userId,jdbcType=VARCHAR} and fn_is_package = 1 
+		and fn_package_id = #{packageId,jdbcType=INTEGER} and state = 0
+	</select>
+	<!-- add by yanshun获取理财包下未发起转让债权 -->
+	<select id="getUnTransferAssetsOfPackage" resultType="Map" parameterType="java.lang.Integer">
+
+		SELECT 
+		Asset.user_id,
+		Asset.bid_id,
+		Asset.asset_id,
+			finance_account.user_name,
+		BidDocument.duration - BidDocument.issue_done AS rest_issue,/*剩余期限*/
+			ROUND((
+				(
+				`BidDocument`.`remain_principal` *
+				`Asset`.`quota`
+				) / `BidDocument`.`money`/100
+				), 2) AS `remain_principal` /*剩余本金（应转让金额）*/
+			FROM Asset
+	   JOIN BidDocument ON( 
+		Asset.bid_id = BidDocument.bid_id
+		)
+		JOIN finance_account ON
+	Asset.fn_backend_id = finance_account.id
+				WHERE Asset.fn_is_package = 1 
+				AND Asset.fn_package_id = #{packageId,jdbcType=INTEGER} AND Asset.state = 0
+	</select>	
+	
+	<select id="getUnsaledAssetsOfPackage" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		SELECT 
+		count(Asset.asset_id) as count
+				FROM Asset
+		 JOIN BidDocument ON( 
+		Asset.bid_id = BidDocument.bid_id
+		)
+		WHERE Asset.fn_is_package = 1 
+		AND Asset.fn_package_id = #{packageId,jdbcType=INTEGER} AND Asset.state in (0,1)
+		<if test="fnAccountIds != null and fnAccountIds.size>0">
+		and 
+		<foreach collection="fnAccountIds" item="item" open="Asset.fn_backend_id not in(" close=")" separator=",">
+				#{item,jdbcType=INTEGER}
+		</foreach>
+	</if>
+	</select>
+	
+	
+	<select id="getAssetByBackendId" resultMap="BaseResultMap">
+		SELECT 
+		<include refid="Base_Column_List"/>
+		from Asset 
+		WHERE Asset.fn_backend_id = #{id} and Asset.bid_id = #{bid}
+	</select>
+	
+	<select id="getAssetByBidAndPackageId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		where bid_id = #{bid,jdbcType=INTEGER} and fn_package_id = #{package_id}
+	</select>
+	
+	
+	<select id="getSuperAsset" resultType="map">
+	
+select 
+		Asset.asset_id,
+		Asset.creat_time as creat_time,
+		fa.user_name AS `user_name`,
+		bid.bid_type_second,
+		fa.package_id AS fn_package_id,
+		bid.bid_name,
+		bid.bid_id,
+		IFNULL((select deal_money from AssetBuy where  AssetBuy.action_sn = Asset.invest_id),0) as amount_a,
+		IFNULL((select Invest.deal_money from Invest where Invest.action_sn = Asset.invest_id),0) as amount_b,
+		Asset.state as asset_state
+	from
+		Asset  join BidDocument bid
+		on Asset.bid_id = bid.bid_id
+	JOIN finance_account fa ON Asset.`fn_backend_id` = fa.id
+		and Asset.`fn_package_id` = fa.`package_id`
+		and Asset.user_id =    #{pageVo.parameters.user_id,jdbcType=VARCHAR}
+		and Asset.fn_package_id  = #{pageVo.parameters.package_id,jdbcType=INTEGER}
+	<if test="pageVo!=null">
+		<if test="pageVo.parameters!=null">
+			<if test="pageVo.parameters.start!=null">
+				and Asset.`creat_time` >= #{pageVo.parameters.start}
+			</if>
+			<if test="pageVo.parameters.end!=null">
+				and Asset.`creat_time`<![CDATA[<=]]> #{pageVo.parameters.end}
+			</if>
+			<if test="pageVo.parameters.state!=null">
+				and Asset.`state`=#{pageVo.parameters.state}
+			</if>
+		</if>
+	</if>
+	</select>
+	
+	
+	<select id="getInTheTransferAsset" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List"/> 
+		from Asset where state = 1 and fn_is_package = 1
+	</select>
+	<select id="getAssetOnSaleCount" resultType="java.lang.Integer">
+	select count(0) from  Asset 
+	join BidDocument 	on 
+	Asset.bid_id = BidDocument.bid_id 
+	and Asset.state=1
+	and BidDocument.for_package = 1
+	</select>
+	<select id="whetherUserHasAsset" resultType="java.lang.String">
+		select asset_id from Asset asset where asset.user_id = #{userId}
+		and asset.creat_time <![CDATA[<=]]> CONCAT(#{today,jdbcType=VARCHAR}," 00:00:00")
+		limit 1;
+	</select>
+	<select id="getTotalWatingGarthing" resultType="map">
+		SELECT ROUND(sum(((`Repayplan`.`principal` * `Asset`.`quota`) / `BidDocument`.`money`/100)),2) as 'income_principal_sum',
+		ROUND(sum(((`Repayplan`.`interest` * `Asset`.`quota`) / `BidDocument`.`money`/100)),2) as 'income_interest_sum'
+		FROM ((`Asset` JOIN `BidDocument` ON ((`Asset`.`bid_id` = `BidDocument`.`bid_id`))) 
+		JOIN `Repayplan` ON ((`Asset`.`bid_id` = `Repayplan`.`bid_id`)))
+	 	WHERE ((`Asset`.`state` = 0) AND (`Repayplan`.`repay_type` = 0) 
+		AND (`Repayplan`.`repayday` >= `Asset`.`creat_time`)) 
+	    AND `Asset`.`user_id` = #{userId} 
+	</select>
+	<!-- 根据标的ID查询出所有的资产 -->
+	<select id="selectByBidGroupByUser" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		    user_id,state
+		from Asset
+		where bid_id = #{bidId,jdbcType=INTEGER} and state in(0,1,4)
+		group by `user_id`
+	</select>	
+	
+	<select id="getAllInvestByUserIdAndBidId" resultType="DECIMAL">
+		select IFNULL(SUM(IFNULL(`Invest`.`deal_money`, 0)),0) 
+		from `Asset` join `Invest` 
+		on `Asset`.`invest_id` = `Invest`.`action_sn`
+		and `Asset`.`bid_id` = #{bidId}
+		and `Asset`.`user_id` = #{userId}  
+		and `Asset`.`state` = 0
+		and `Asset`.`asset_id` = #{assetId};
+	</select>
+	
+	<select id="getAllAssetBuyByUserIdAndBidId" resultType="DECIMAL">
+		select IFNULL(SUM(IFNULL(`AssetBuy`.`principal`, 0)),0)
+		from `Asset` join `AssetBuy` 
+		on `Asset`.`invest_id` = `AssetBuy`.`action_sn` 
+		and `Asset`.`bid_id` = #{bidId}
+		and `Asset`.`user_id` = #{userId}
+		and `Asset`.`state` = 0
+		and `Asset`.`asset_id` = #{assetId};
+	</select>
+	
+	<select id="getUnFinishCountByBidAndUserId" resultType="int">
+		select COUNT(1) 
+		from Asset 
+		where `Asset`.`bid_id` = #{bidId} 
+		and `Asset`.`user_id` = #{userId} 
+		and `Asset`.`state` = 0;
+	</select>
+	
+	<select id="getAllUserIdByBidId" resultType="String">
+		select DISTINCT `user_id` userId
+		from `Asset` 
+		where `bid_id` = #{bidId} 
+		and  `Asset`.`state` = 0;
+	</select>
+	
+	<select id="isHaveAsset" resultType="map">
+		select 	
+			IF(b_join.`is_first_match`=1,IF(bid.bid_from_type=1,1,2),IF(asset.fn_package_id = 0,3,4)) as is_first_match
+		from finance_bid_join_type b_join
+		left join AssetSale sale on b_join.`asset_id` = sale.`asset_id`
+		left join `BidDocument` bid on b_join.`bid_id` = bid.`bid_id`
+		left join Asset asset on asset.`asset_id` = b_join.`asset_id`
+		left join `finance_account` fa on fa.id = asset.`fn_backend_id`,
+		finance_package fp 
+		where  b_join.package_id =#{packageId} AND  b_join.markdel in (0,2) and b_join.package_id = fp.id 
+	</select>
+
+	<select id="searchAssign" parameterType="String" resultType="map">
+		SELECT
+			`asset`.`invest_id` AS `invest_id`,
+			`asset`.`state` AS `assign_state`,
+			`buy`.`ts_submit` AS `assign_time`
+		FROM
+			`Asset` AS `asset`
+		LEFT JOIN
+			`AssetBuy` AS `buy`
+		ON
+			`asset`.`asset_id` = `buy`.`asset_id`
+		WHERE
+			`asset`.`invest_id` IN (${investIds})
+	</select>
+
+    <select id="isNewer" resultType="boolean" parameterType="String">
+        SELECT
+            COUNT(0) = 0
+        FROM
+            `Asset` AS `asset`
+        WHERE
+            `asset`.`user_id` = #{userid,jdbcType=VARCHAR}
+    </select>
+	
+	<select id="getAssetByFinanceAccountIdAndState" resultMap="BaseResultMap">
+		SELECT
+		   <include refid="Base_Column_List"/>
+		FROM
+			`Asset`
+		WHERE
+			`Asset`.`state` in (0,1)
+		AND  `Asset`.fn_backend_id = #{financeAccountId}
+	</select>
+
+	<select id="getBidByFinanceCompletTime" resultMap="BaseResultMap">
+		SELECT * FROM Asset WHERE fn_package_id IN (SELECT id FROM finance_package WHERE DATE(complete_time)=CURDATE() and state in(30,31)) and state IN(0,1) GROUP BY bid_id;
+	</select>
+
+	<select id="getAssetByBidId" resultMap="BaseResultMap">
+		SELECT * FROM Asset WHERE bid_id=#{bidId} GROUP BY fn_package_id
+	</select>
+
+	<select id="selectEffectByBid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and  state IN(0,1)
+		group by fn_package_id
+	</select>
+
+	<select id="getAssetCount" resultType="int" parameterType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			`Asset` AS `asset`
+		WHERE
+			`asset`.`state` IN (0, 1)
+			AND `asset`.`user_id_num` = #{userIdNum,jdbcType=INTEGER}
+	</select>
+
+	<select id="getUnTransferAssetsByPackageId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		 Asset.*
+		FROM Asset
+		JOIN BidDocument ON(
+		Asset.bid_id = BidDocument.bid_id
+		)
+		JOIN finance_account ON
+		Asset.fn_backend_id = finance_account.id
+		WHERE Asset.fn_is_package = 1
+		AND Asset.fn_package_id = #{packageId,jdbcType=INTEGER} AND Asset.state = 0
+	</select>
+	
+	<select id="selectEffectByUpdateTime" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		where state = 0 and (update_time <![CDATA[<]]> = #{update_time,jdbcType=DATE} or update_time is null) and fn_is_package = 1
+	</select>
+	
+	<update id="batchUpdate" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";">
+			update Asset
+			<set>
+				<trim suffixOverrides=",">
+						<if test="item.remainPrincipal != null" >
+				       		remain_principal =  #{item.remainPrincipal,jdbcType=DECIMAL},
+				      	</if>
+				      	<if test="item.receivableInterest != null" >
+				        	receivable_interest = #{item.receivableInterest,jdbcType=DECIMAL},
+				      	</if>  
+						<if test="item.updateTime != null">
+							update_time = #{item.updateTime,jdbcType=TIMESTAMP},
+						</if>
+				</trim>
+			</set>				
+			<where>
+			      	<if test="item.assetId != null" >
+			        	asset_id = #{item.assetId,jdbcType=INTEGER}
+			      	</if>  			
+			</where>
+		</foreach>
+	</update>	
+	
+	<select id="selectByAssetIds" parameterType="java.util.List" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from Asset
+		<where>
+			<foreach collection="list" item="item" open="asset_id in(" close=")" separator=",">
+				#{item,jdbcType=INTEGER}
+			</foreach>
+		</where>
+	</select>
+	<select id="getTodayLoanAmountByUserId"  resultType="map">
+		select sum(invest_money) from Invest  where
+			user_id=#{userId}
+			and date_format(ts_submit, '%Y-%m-%d')=date_format(now(), '%Y-%m-%d')
+	</select>
+	
+	<select id="getOwnedAssetsByUserId"  resultMap="BaseResultMap">
+		SELECT
+			 <include refid="Base_Column_List" />
+		FROM
+			Asset 
+		WHERE
+			user_id=#{userId}
+			AND state in(0,1)
+	</select>
+
+	<select id="getFullAssetByFinanceAccountIdAndState" resultType="map">
+		SELECT
+		   a.asset_id,a.bid_id,bd.bid_name,bd.bid_type_second,a.creat_time,a.fn_backend_id,ROUND(((a.`quota`* bd.`remain_principal`)/bd.`money`/100),2) AS money,bd.bid_type
+		FROM
+			Asset a left join BidDocument bd on a.bid_id=bd.bid_id
+		<where>
+			<if test="pageVo !=null">
+			    <if test="pageVo.parameters!=null">		
+			    	<if test="pageVo.parameters.financeAccountId!=null">
+						and a.fn_backend_id = #{pageVo.parameters.financeAccountId}
+					</if>
+					<if test="pageVo.parameters.state!=null">
+						and a.state = #{pageVo.parameters.state}
+					</if>
+				</if>
+			</if>
+	    </where>
+	</select>
+	<select id="getEveryAssetDealMoney" resultType="map" parameterType="Integer">
+		SELECT a.quota,a.bid_id,i.deal_money,a.asset_id FROM `Asset` a inner join AssetBuy i on  a.invest_id=i.action_sn where fn_backend_id =#{financeAccountId}
+		union 
+		SELECT a.quota,a.bid_id,i.deal_money,a.asset_id FROM `Asset` a inner join Invest i on  a.invest_id=i.action_sn where fn_backend_id =#{financeAccountId}
+	</select>
+	
+	<select id="getFinishedTransferAssets" resultMap="BaseResultMap" parameterType="String">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			Asset 
+		WHERE
+		<foreach collection="financeAccountIds" item="item" open="fn_backend_id in(" close=")" separator=",">
+							#{item,jdbcType=INTEGER}
+		</foreach>
+		and date_format(update_time, '%Y-%m-%d')=date_format(now(), '%Y-%m-%d')
+		AND state = 2
+		GROUP BY
+			fn_backend_id
+	</select>
+	<select id="getUnTransferAssetsByDate"  resultType="map">
+		select 
+		asset_id, invest_id, bid_id, type, quota, sale, creat_time, interest_fee_rate,    fn_is_package, fn_package_id,fn_backend_id, plat_form_sn,pay_interest,pre_trade_amount,remain_principal,receivable_interest
+		from Asset
+		JOIN finance_account ON      Asset.fn_backend_id = finance_account.id
+		JOIN finance_package as `curr_pkg` ON `curr_pkg`.id = Asset.`fn_package_id`
+		where
+		`curr_pkg`.state = 30
+		and Asset.fn_is_package = 1 AND Asset.state = 0
+		and `complete_time` = #{completeTime,jdbcType=DATE}		
+ 
+	</select>
+	<select id="getAssetByBidAndUserId"  resultType="map">
+		select quota as quota,user_id,fn_package_id,fn_backend_id from Asset
+		 where bid_id=#{bidId,jdbcType=INTEGER} and state=0 and fn_is_package=1
+	</select>
+
+	<update id="batchUpdateToEnd" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";">
+			update Asset
+			<set>
+				<if test="item.state != null" >
+					state=#{item.state,jdbcType=INTEGER}
+				</if>
+			</set>
+			<where>
+				asset_id = #{item.assetId,jdbcType=INTEGER} and state = 0
+			</where>
+		</foreach>
+	</update>
+	<select id="getValidAssetByBid" resultMap="BaseResultMap">
+	select
+		<include refid="Base_Column_List" />
+		from Asset
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and  state IN(0,1)
+	</select>
+	 <select id="getTotalVaildQuota" resultType="java.math.BigDecimal">
+	 	select sum(quota) as total_quota from Asset where bid_id=#{bidId,jdbcType=INTEGER} and state=0 and fn_is_package=1
+	 </select>
+</mapper>

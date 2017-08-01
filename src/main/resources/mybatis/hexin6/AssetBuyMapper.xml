@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Dao 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hexin.mapper.hexin6.AssetBuyMapper">
+	<resultMap id="BaseResultMap" type="com.hexin.domain.hexin6.AssetBuy">
+		<id column="action_sn" property="actionSn" jdbcType="INTEGER" />
+		<result column="asset_id" property="assetId" jdbcType="INTEGER" />
+		<result column="invest_money" property="investMoney" jdbcType="DECIMAL" />
+		<result column="deal_money" property="dealMoney" jdbcType="DECIMAL" />
+		<result column="quota" property="quota" jdbcType="DECIMAL" />
+		<result column="principal" property="principal" jdbcType="DECIMAL" />
+		<result column="interest" property="interest" jdbcType="DECIMAL" />
+		<result column="reward" property="reward" jdbcType="DECIMAL" />
+		<result column="saler" property="saler" jdbcType="VARCHAR" />
+		<result column="bid_id" property="bidId" jdbcType="INTEGER" />
+		<result column="buyer" property="buyer" jdbcType="VARCHAR" />
+		<result column="ts_submit" property="tsSubmit" jdbcType="TIMESTAMP" />
+		<result column="fn_is_package" property="fnIsPackage" jdbcType="INTEGER"/>
+		<result column="current_level" property="currentLevel" jdbcType="INTEGER"/>
+		<result column="plus_rate" property="plusRate" jdbcType="DECIMAL"/>
+		<result column="buyer_num" property="buyerNum" jdbcType="INTEGER" />
+        <result column="saler_num" property="salerNum" jdbcType="INTEGER" />
+		<result column="auth_code" property="authCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		action_sn, asset_id, invest_money, deal_money, quota, principal, interest, reward,
+		saler, bid_id,fn_is_package,current_level,plus_rate, buyer_num, saler_num ,auth_code
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from AssetBuy
+		where action_sn = #{actionSn,jdbcType=INTEGER}
+	</select>
+	<select id="selectByAssetId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from AssetBuy
+		where asset_id = #{assetId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from AssetBuy
+		where action_sn = #{actionSn,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.hexin.domain.hexin6.AssetBuy">
+		insert into AssetBuy (action_sn, asset_id, invest_money,
+		deal_money, quota, principal,
+		interest, reward, saler,
+		bid_id,buyer,ts_submit,fn_is_package,current_level, buyer_num, saler_num,auth_code
+		<if test="plusRate != null">
+			, plus_rate
+		</if>
+		)
+		
+		values (#{actionSn,jdbcType=INTEGER}, #{assetId,jdbcType=INTEGER}, #{investMoney,jdbcType=DECIMAL},
+		#{dealMoney,jdbcType=DECIMAL}, #{quota,jdbcType=DECIMAL}, #{principal,jdbcType=DECIMAL},
+		#{interest,jdbcType=DECIMAL}, #{reward,jdbcType=DECIMAL}, #{saler,jdbcType=VARCHAR},
+		#{bidId,jdbcType=INTEGER}, #{buyer,jdbcType=VARCHAR}, #{tsSubmit,jdbcType=TIMESTAMP},
+		#{fnIsPackage,jdbcType=INTEGER},#{currentLevel,jdbcType=INTEGER},
+		#{buyerNum,jdbcType=INTEGER}, #{salerNum,jdbcType=INTEGER},  #{authCode,jdbcType=VARCHAR}
+		<if test="plusRate != null">
+			, #{plusRate,jdbcType=DECIMAL}
+		</if>		
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.hexin.domain.hexin6.AssetBuy">
+		insert into AssetBuy
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="actionSn != null">
+				action_sn,
+			</if>
+			<if test="assetId != null">
+				asset_id,
+			</if>
+			<if test="investMoney != null">
+				invest_money,
+			</if>
+			<if test="dealMoney != null">
+				deal_money,
+			</if>
+			<if test="quota != null">
+				quota,
+			</if>
+			<if test="principal != null">
+				principal,
+			</if>
+			<if test="interest != null">
+				interest,
+			</if>
+			<if test="reward != null">
+				reward,
+			</if>
+			<if test="saler != null">
+				saler,
+			</if>
+			<if test="bidId != null">
+				bid_id,
+			</if>
+			<if test="fnIsPackage != null">
+				is_Finance_package,
+			</if>
+			<if test="plusRate != null">
+				plus_rate,
+			</if>
+			<if test="buyerNum != null">
+				buyer_num,
+			</if>
+			<if test="salerNum != null">
+				saler_num,
+			</if>
+			<if test="authCode != null">
+				auth_code,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="actionSn != null">
+				#{actionSn,jdbcType=INTEGER},
+			</if>
+			<if test="assetId != null">
+				#{assetId,jdbcType=INTEGER},
+			</if>
+			<if test="investMoney != null">
+				#{investMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="dealMoney != null">
+				#{dealMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="quota != null">
+				#{quota,jdbcType=DECIMAL},
+			</if>
+			<if test="principal != null">
+				#{principal,jdbcType=DECIMAL},
+			</if>
+			<if test="interest != null">
+				#{interest,jdbcType=DECIMAL},
+			</if>
+			<if test="reward != null">
+				#{reward,jdbcType=DECIMAL},
+			</if>
+			<if test="saler != null">
+				#{saler,jdbcType=VARCHAR},
+			</if>
+			<if test="bidId != null">
+				#{bidId,jdbcType=INTEGER},
+			</if>
+			<if test="fnIsPackage != null">
+				#{fnIsPackage,jdbcType=INTEGER},
+			</if>
+			<if test="plusRate != null">
+				#{plusRate,jdbcType=DECIMAL},
+			</if>
+			<if test="buyerNum != null">
+				#{buyerNum,jdbcType=INTEGER},
+			</if>
+			<if test="salerNum != null">
+				#{salerNum,jdbcType=INTEGER},
+			</if>
+			<if test="authCode != null">
+				#{authCode,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.hexin.domain.hexin6.AssetBuy">
+		update AssetBuy
+		<set>
+			<if test="assetId != null">
+				asset_id = #{assetId,jdbcType=INTEGER},
+			</if>
+			<if test="investMoney != null">
+				invest_money = #{investMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="dealMoney != null">
+				deal_money = #{dealMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="quota != null">
+				quota = #{quota,jdbcType=DECIMAL},
+			</if>
+			<if test="principal != null">
+				principal = #{principal,jdbcType=DECIMAL},
+			</if>
+			<if test="interest != null">
+				interest = #{interest,jdbcType=DECIMAL},
+			</if>
+			<if test="reward != null">
+				reward = #{reward,jdbcType=DECIMAL},
+			</if>
+			<if test="saler != null">
+				saler = #{saler,jdbcType=VARCHAR},
+			</if>
+			<if test="bidId != null">
+				bid_id = #{bidId,jdbcType=INTEGER},
+			</if>
+			<if test="fnIsPackage != null">
+				fn_is_package = #{fnIsPackage,jdbcType=INTEGER},
+			</if>
+			<if test="plusRate != null">
+				plus_rate = #{plusRate,jdbcType=DECIMAL},
+			</if>
+			<if test="buyerNum != null">
+				buyer_num = #{buyerNum,jdbcType=INTEGER},
+			</if>
+			<if test="salerNum != null">
+				saler_num = #{salerNum,jdbcType=INTEGER},
+			</if>
+		</set>
+		where action_sn = #{actionSn,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.hexin.domain.hexin6.AssetBuy">
+		update AssetBuy
+		set asset_id = #{assetId,jdbcType=INTEGER},
+		invest_money = #{investMoney,jdbcType=DECIMAL},
+		deal_money = #{dealMoney,jdbcType=DECIMAL},
+		quota = #{quota,jdbcType=DECIMAL},
+		principal = #{principal,jdbcType=DECIMAL},
+		interest = #{interest,jdbcType=DECIMAL},
+		reward = #{reward,jdbcType=DECIMAL},
+		saler = #{saler,jdbcType=VARCHAR},
+		bid_id = #{bidId,jdbcType=INTEGER},
+		fn_is_package = #{fnIsPackage,jdbcType=INTEGER},
+		plus_rate = #{plusRate,jdbcType=DECIMAL}
+		where action_sn = #{actionSn,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 查询一段时间内累计购买债权 -->
+	<select id="queryAssetBuySumByUserIdTsTime" parameterType="map" resultType="DECIMAL">
+		SELECT/*TO_COUNT*/
+		IF(SUM(`AssetBuy`.`deal_money`) IS NULL ,0, SUM(`AssetBuy`.`deal_money`)) AS `exchange_money_sum`
+		FROM
+		`AssetBuy`
+		WHERE 
+		 `AssetBuy`.`buyer` = #{userId,jdbcType=VARCHAR} 
+		 AND  `AssetBuy`.`ts_submit` <![CDATA[>=]]>  #{startOpTime,jdbcType=TIMESTAMP}  
+		 AND  `AssetBuy`.`ts_submit` <![CDATA[<=]]>  #{endOpTime,jdbcType=TIMESTAMP}
+		 AND `AssetBuy`.`fn_is_package` = 0
+	</select>
+</mapper>

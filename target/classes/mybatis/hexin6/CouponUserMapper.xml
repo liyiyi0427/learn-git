@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hexin.mapper.hexin6.CouponUserMapper">
+  <resultMap id="BaseResultMap" type="com.hexin.domain.hexin6.CouponUser">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="coupon_number" jdbcType="VARCHAR" property="couponNumber" />
+    <result column="is_handauto" jdbcType="TINYINT" property="isHandauto" />
+    <result column="coupon_task_id" jdbcType="INTEGER" property="couponTaskId" />
+    <result column="coupon_type_id" jdbcType="INTEGER" property="couponTypeId" />
+    <result column="coupon_type" jdbcType="TINYINT" property="couponType" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="use_status" jdbcType="TINYINT" property="useStatus" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="acquire_time" jdbcType="TIMESTAMP" property="acquireTime" />
+    <result column="bid_id" jdbcType="INTEGER" property="bidId" />
+    <result column="package_id" jdbcType="INTEGER" property="packageId" />
+    <result column="platform" jdbcType="TINYINT" property="platform" />
+    <result column="invest_id" jdbcType="INTEGER" property="investId" />
+    <result column="finance_package_id" jdbcType="INTEGER" property="financePackageId" />
+    <result column="invest_money" jdbcType="DECIMAL" property="investMoney" />
+    <result column="coupon_moeny" jdbcType="DECIMAL" property="couponMoeny" />
+    <result column="is_honour" jdbcType="TINYINT" property="isHonour" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="use_time" jdbcType="TIMESTAMP" property="useTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, coupon_number, is_handauto, coupon_task_id, coupon_type,coupon_type_id, user_id, user_name,
+    use_status, begin_time, end_time, acquire_time, bid_id, package_id, platform, invest_id, 
+    finance_package_id, invest_money, coupon_moeny, is_honour, version, create_time, 
+    update_time,use_time,remark
+  </sql>
+
+  <select id="searchCouponUseInfo" parameterType="com.hexin.model.PageVo" resultType="map">
+    SELECT (SELECT COUNT(use_status) FROM Coupon_User WHERE user_id = #{pageVo.parameters.user_id,jdbcType=VARCHAR} AND use_status = 1 and end_time >= date(now())) AS grantTotalUnUse,
+            (SELECT COUNT(use_status)  FROM Coupon_User WHERE user_id = #{pageVo.parameters.user_id,jdbcType=VARCHAR} AND use_status = 2) AS grantTotalUsed,
+            IFNULL((SELECT SUM(coupon_moeny)   FROM Coupon_User WHERE user_id = #{pageVo.parameters.user_id,jdbcType=VARCHAR} AND use_status = 2),0) AS grantTotalReplaceMoney
+    FROM DUAL
+  </select>
+
+  <select id="selectCouponrRecods" parameterType="com.hexin.model.PageVo" resultType="java.util.Map">
+    SELECT
+    a.coupon_number AS coupon_number,
+    b.batch_number AS batch_number,
+    b.remark AS remark,
+    a.remark AS c_remark,
+    TRUNCATE(a.coupon_moeny,2)  AS coupon_moeny,
+    a.user_name AS user_name,
+    a.use_status AS use_status,
+    DATE_FORMAT(a.begin_time,'%Y-%m-%d') AS begin_time,
+    DATE_FORMAT(a.end_time,'%Y-%m-%d') AS end_time,
+    DATE_FORMAT(a.acquire_time,'%Y-%m-%d') AS acquire_time,
+    a.use_time AS use_time,
+    a.is_honour AS is_honour,
+    c.bid_type AS bid_type,
+    TRUNCATE(a.invest_money,2) AS invest_money,
+    a.platform AS platform,
+    a.update_time AS update_time,
+    IFNULL(a.package_id,a.bid_id)AS bid_id,
+    TRUNCATE(b.limit_invest,2) AS limit_invest,
+    b.coupon_type AS coupon_type,
+    b.is_mortgage AS is_mortgage,
+    b.is_credit AS is_credit,
+    b.is_package AS is_package,
+    b.is_newhand AS is_newhand,
+    b.valid_days AS valid_days,
+    b.period_type AS period_type,
+    b.post_period AS post_period,
+    b.is_asseted  AS is_asseted,
+    b.is_month_add_rate
+    FROM
+    Coupon_User a
+    LEFT JOIN
+    Coupon_Type b ON a.coupon_type_id = b.id
+    LEFT
+    JOIN BidDocument c ON a.bid_id = c.bid_id
+    <trim prefix="where" prefixOverrides="and ">
+      <if test="pageVo !=null">
+        <if test="pageVo.parameters!=null">
+          <if test="pageVo.parameters.user_id!=null">
+            and a.user_id =
+            #{pageVo.parameters.user_id,jdbcType=VARCHAR}
+          </if>
+
+          <if test="pageVo.parameters.is_honour!=null">
+            and a.is_honour =
+            #{pageVo.parameters.is_honour,jdbcType=TINYINT}
+          </if>
+          <if test="pageVo.parameters.coupon_number!=null">
+            and a.coupon_number =
+            #{pageVo.parameters.coupon_number,jdbcType=VARCHAR}
+          </if>
+          <if test="pageVo.parameters.batch_number!=null">
+            and b.batch_number =
+            #{pageVo.parameters.batch_number,jdbcType=VARCHAR}
+          </if>
+          <if test="pageVo.parameters.use_status==1 ">
+            and a.use_status = #{pageVo.parameters.use_status,jdbcType=TINYINT}
+            and a.end_time <![CDATA[>=]]>  date(now())
+          </if>
+          <if test="pageVo.parameters.use_status==2 ">
+            and a.use_status in (2,5)
+          </if>
+          <if test="pageVo.parameters.use_status==3">
+            and a.use_status = 3
+          </if>
+        </if>
+      </if>
+    </trim>
+    order by a.acquire_time desc
+  </select>
+
+
+
+</mapper>

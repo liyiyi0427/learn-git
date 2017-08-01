@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Dao 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hexin.mapper.hexin6.RepayplanMapper">
+	<resultMap id="BaseResultMap" type="com.hexin.domain.hexin6.Repayplan">
+		<id column="bid_id" property="bidId" jdbcType="INTEGER" />
+		<id column="issue" property="issue" jdbcType="INTEGER" />
+		<id column="repay_type" property="repayType" jdbcType="INTEGER" />
+		<result column="principal" property="principal" jdbcType="DECIMAL" />
+		<result column="interest" property="interest" jdbcType="DECIMAL" />
+		<result column="repayday" property="repayday" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="repay_state" property="repayState" jdbcType="TINYINT" />
+		<result column="is_package" property="isPackage" jdbcType="TINYINT" />
+		<result column="is_reinvest" property="isReInvest" jdbcType="INTEGER" />
+		<result column="package_id" property="packageId" jdbcType="INTEGER" />
+		<result column="is_repurchase" property="isRepurchase" jdbcType="TINYINT" />
+		<result column="repurchase_state" property="repurchaseState" jdbcType="TINYINT" />
+		<result column="process_bank_state" property="processBankState" jdbcType="TINYINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		bid_id, issue, repay_type, principal, interest, repayday, state,repay_state,is_reinvest,package_id,process_bank_state
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.hexin.domain.hexin6.RepayplanKey">
+		select
+		<include refid="Base_Column_List" />
+		from Repayplan
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and issue = #{issue,jdbcType=INTEGER}
+		and repay_type = #{repayType,jdbcType=INTEGER}
+	</select>
+	<!-- add by yanshun -->
+	<select id="getRepayplansForReinvestWork" resultMap="BaseResultMap">
+	SELECT
+	
+	 plan.bid_id, 
+	 plan.issue,
+	 plan.repay_type,
+	 plan.principal,
+	 plan.interest,
+	 plan.repayday, 
+	 plan.state,
+	 plan.repay_state,
+	 plan.is_reinvest,
+	 plan.package_id 
+	FROM
+		BidDocument AS bid
+	JOIN Repayplan AS plan ON bid.bid_id = plan.bid_id
+	AND bid.for_package = 1
+	AND plan.repayday = DATE_FORMAT(Now(), "%Y-%m-%d")
+	</select>		
+	<insert id="insert" parameterType="com.hexin.domain.hexin6.Repayplan">
+		insert into Repayplan (bid_id, issue, repay_type,
+		principal, interest, repayday,
+		state,is_package,is_reinvest,package_id)
+		values (#{bidId,jdbcType=INTEGER}, #{issue,jdbcType=INTEGER}, #{repayType,jdbcType=INTEGER},
+		#{principal,jdbcType=INTEGER}, #{interest,jdbcType=INTEGER}, #{repayday,jdbcType=TIMESTAMP},
+		#{state,jdbcType=TINYINT},#{isPackage,jdbcType=TINYINT},#{isReInvest,jdbcType=INTEGER},#{packageId,jdbcType=INTEGER})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.hexin.domain.hexin6.Repayplan">
+		update Repayplan
+		set principal = #{principal,jdbcType=DECIMAL},
+		interest = #{interest,jdbcType=DECIMAL},
+		repayday = #{repayday,jdbcType=TIMESTAMP},
+		state = #{state,jdbcType=TINYINT}
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and issue = #{issue,jdbcType=INTEGER}
+		and repay_type = #{repayType,jdbcType=INTEGER}
+	</update>
+	<!-- 更新还款状态 -->
+	<update id="updateStateByPrimaryKey" parameterType="com.hexin.domain.hexin6.Repayplan">
+		update Repayplan
+		set  state = #{state,jdbcType=TINYINT}
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and issue = #{issue,jdbcType=INTEGER}
+		and repay_type = #{repayType,jdbcType=INTEGER}
+	</update>
+	<!-- 查询还款计划 -->
+	<select id="selectRepayPlan"  resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from Repayplan
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		<if test="issue != null">
+			and issue = #{issue,jdbcType=INTEGER}
+		</if>
+		<if test="repayType != null">
+			and repay_type = #{repayType,jdbcType=INTEGER}
+		</if>
+		 <if test="packageId != null" >
+        	and package_id = #{packageId,jdbcType=INTEGER}
+      </if>
+	</select>
+	
+		<!-- 查询还款计划 -->
+	<select id="selectRepayPlanAll"  resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from Repayplan
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		<if test="issue != null">
+			and issue >= #{issue,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- 查询还款列表详细信息，根据视图转过来 -->
+	<select id="selectRepayPlanDetail" resultType="map" parameterType="map">
+		 SELECT
+   `Repayplan`.`bid_id` AS `bid_id`,
+   `BidDocument`.`bid_name` AS `bid_name`,
+   `BidDocument`.`bid_type` AS `bid_type`,if((`BidDocument`.`repayment_type` = 2),1,`BidDocument`.`duration`) AS `duration`,
+   `BidDocument`.`money` AS `money`,
+   `BidDocument`.`rate` AS `rate`,
+   `BidDocument`.`user_id` AS `bid_borrower_id`,
+   `BidDocument`.`guarantee` AS `guarantee_id`,
+   `BidDocument`.`repayment_type` AS `bid_repayment_type`,
+   `BidDocument`.`issue_done` AS `issue_done`,
+   `BidDocument`.`remain_principal` AS `remain_principal`,
+   `BidDocument`.`remain_interest` AS `remain_interest`,
+   `BidDocument`.`transact_time` AS `start_time`,
+   `Repayplan`.`issue` AS `repay_issue`,
+   `Repayplan`.`repayday` AS `ts_repay`,
+   `Repayplan`.`principal` AS `principal_to_repay`,
+   `Repayplan`.`interest` AS `interest_to_repay`,
+   if((`Repayplan`.`state` = 0),if(((to_days(now()) - to_days(`Repayplan`.`repayday`)) > 0),(to_days(now()) - to_days(`Repayplan`.`repayday`)),0),0) AS `days_overdue`,ROUND(((if((`Repayplan`.`state` = 0),if(((to_days(now()) - to_days(`Repayplan`.`repayday`)) > 0),(to_days(now()) - to_days(`Repayplan`.`repayday`)),0),0) * `BidDocument`.`delaypayment_fee_rate`) * (`Repayplan`.`principal` + `Repayplan`.`interest`))) AS `punish_to_repay`,if((`Repayplan`.`state` = 0),if(((to_days(now()) - to_days(`Repayplan`.`repayday`)) <![CDATA[<]]> 0),`BidDocument`.`remain_principal`,0),0) AS `principal_remain`,ROUND(if((`Repayplan`.`state` = 0),(if(((to_days(now()) - to_days(`Repayplan`.`repayday`)) <![CDATA[<]]> 0),`BidDocument`.`remain_principal`,0) * `BidDocument`.`prepayment_fee_rate`),0)) AS `liquidated_damages`,if((`Repayment`.`principal` is not null),`Repayment`.`principal`,0) AS `principal_done`,if((`Repayment`.`interest` is not null),`Repayment`.`interest`,0) AS `interest_done`,
+   `BidDocument`.`prepayment_fee_rate` AS `prepayment_fee_rate`,
+   `Repayplan`.`state` AS `state`
+FROM ((`Repayplan` join `BidDocument` on(((`Repayplan`.`bid_id` = `BidDocument`.`bid_id`) and (`Repayplan`.`repay_type` = 0)))) left join `Repayment` on(((`Repayplan`.`bid_id` = `Repayment`.`bid_id`) and (`Repayplan`.`issue` = `Repayment`.`repay_issue`) and (`Repayment`.`repay_type` = 0))))  
+
+where `Repayplan`.`bid_id`= #{bid} and `Repayplan`.`issue`=#{issue}
+	</select>
+	<select id="getAutoInvestRewardRecord" resultType="map">
+	SELECT
+		`Repayplan`.`bid_id` AS `bid_id`,
+		`Repayplan`.`issue` AS `issue`,
+		`Repayplan`.`repay_type` AS `repay_type`,
+		`Repayplan`.`principal` AS `principal`,
+		`Repayplan`.`interest` AS `interest`,
+		`Repayplan`.`repayday` AS `repayday`,
+		`BidDocument`.`duration` AS `last_issue`,
+		`BidDocument`.`user_id` AS `user_id`,
+		`BidDocument`.`guarantee` AS `guarantee`
+	FROM
+		(
+			`Repayplan`
+			JOIN `BidDocument` ON (
+				(
+					`Repayplan`.`bid_id` = `BidDocument`.`bid_id`
+				)
+			)
+		)
+	WHERE
+		(
+			(
+				`Repayplan`.`repayday` = concat(date_format(now(),'%Y-%m-%d'),' 00:00:00')
+			)
+			AND (`Repayplan`.`state` = 0 ) and (`Repayplan`.`repay_type` = 1 ) AND  (`Repayplan`.`process_bank_state` = 0 )
+		) AND `Repayplan`.`is_package`=0
+	</select>
+	<select id="getRepayPlanByBidIdAndIssue" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+	    select
+	         <include refid="Base_Column_List" />
+	    from
+	       Repayplan 
+	    where 
+	       bid_id = #{bidId} 
+	       and issue = #{issue}
+	       and repay_type=1 and state = 0
+	</select>
+	
+	<update id="updateRepayStateByPrimaryKey" parameterType="com.hexin.domain.hexin6.Repayplan">
+		update Repayplan
+		set 
+		repay_state = #{repayState,jdbcType=TINYINT}
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and issue = #{issue,jdbcType=INTEGER}
+		and repay_type = #{repayType,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.hexin.domain.hexin6.Repayplan" >
+    update Repayplan
+    <set >
+      <if test="principal != null" >
+        principal = #{principal,jdbcType=DECIMAL},
+      </if>
+      <if test="interest != null" >
+        interest = #{interest,jdbcType=DECIMAL},
+      </if>
+      <if test="repayday != null" >
+        repayday = #{repayday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="isReInvest!= null" >
+        is_reinvest = #{isReInvest,jdbcType=TINYINT},
+      </if>
+      <if test="packageId != null" >
+        package_id = #{packageId,jdbcType=INTEGER},
+      </if>
+      <if test="repayState != null" >
+        repay_state = #{repayState,jdbcType=TINYINT},
+      </if>
+		<if test="processBankState!=null">
+			process_bank_state=#{processBankState,jdbcType=INTEGER}
+		</if>
+    </set>
+    where bid_id = #{bidId,jdbcType=INTEGER}
+      and issue = #{issue,jdbcType=INTEGER}
+      and repay_type = #{repayType,jdbcType=INTEGER}
+  </update>
+  
+  <!--<select id="getFinanceRepayList" resultType="map">-->
+  <!--SELECT-->
+		<!--plan.bid_id,-->
+		<!--bid.bid_type,-->
+		<!--bid.bid_name,-->
+		<!--bid.borrow_uname,-->
+		<!--bid.user_name,-->
+		<!--bid.bid_type_second,-->
+		<!--bid.repayment_type,-->
+		<!--plan.package_id,-->
+		<!--plan.issue,-->
+		<!--bid.join_issue as duration,-->
+		<!--bid.money,-->
+		<!--plan.principal,-->
+		<!--plan.interest,-->
+		<!--plan.principal + plan.interest AS repay_all,-->
+		<!--account.total_money - account.freeze_for_invest - account.freeze_for_cash AS available_money,-->
+		<!--plan.repayday,-->
+		<!--plan.is_reinvest,-->
+		<!--bid.user_id,-->
+		<!--bid.bid_from_type,-->
+		<!--bid.is_quit,-->
+		<!--bid.trusteeship_user_id as trust_user_id,-->
+	  	<!--plan.repay_state as repay_state,-->
+	  	<!--bid.auditing_code as auditing_code-->
+	<!--FROM-->
+		<!--Repayplan plan-->
+	<!--LEFT JOIN BidDocument bid ON plan.bid_id = bid.bid_id-->
+	<!--LEFT JOIN Account account ON bid.user_id = account.user_id-->
+	<!--WHERE-->
+		<!--plan.repay_type = 0 and bid.for_package = 1-->
+	<!---->
+	<!--<if test="pageVo!=null">-->
+		<!--<if test="pageVo.parameters!=null">-->
+			<!--<if test="pageVo.parameters.repay_start!=null">-->
+				<!--and plan.repayday >= #{pageVo.parameters.repay_start}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.repay_end!=null">-->
+				<!--and plan.repayday <![CDATA[<=]]>#{pageVo.parameters.repay_end}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.is_reinvest!=null">-->
+				<!--and plan.is_reinvest = #{pageVo.parameters.is_reinvest}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.user_id!=null">-->
+				<!--and bid.user_id=#{pageVo.parameters.user_id}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.bid_id!=null">-->
+				<!--and bid.bid_id=#{pageVo.parameters.bid_id}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.bid_name!=null">-->
+				<!--and bid.bid_name like concat(#{pageVo.parameters.bid_name},'%')-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.package_id!=null">-->
+				<!--and plan.package_id=#{pageVo.parameters.package_id}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.user_name!=null">-->
+				<!--and bid.user_name like concat(#{pageVo.parameters.user_name},'%')-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.state!=null">-->
+				<!--and plan.state = #{pageVo.parameters.state}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.bid_from_type!=null">-->
+				<!--and bid.bid_from_type = #{pageVo.parameters.bid_from_type}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.repay_state!=null">-->
+				<!--and plan.repay_state = #{pageVo.parameters.repay_state}-->
+			<!--</if>-->
+			<!--<if test="pageVo.parameters.bid_type!=null">-->
+				<!--and bid.bid_type=#{pageVo.parameters.bid_type}-->
+			<!--</if>			-->
+		<!--</if>-->
+	<!--</if>-->
+	<!---->
+	 <!--<if test="pageVo.sort!=null">-->
+	   <!--<foreach collection="pageVo.sort"  item="item" index="key" separator=","  open = " order by  ">-->
+		       <!--${key} ${item}-->
+	    <!--</foreach>-->
+	 <!--</if>-->
+  <!---->
+  <!--</select>-->
+  
+  
+  <select id="getFinanceRepayListCount" resultType="DECIMAL">
+	  SELECT
+		sum(plan.principal + plan.interest)
+	FROM
+		Repayplan plan
+	LEFT JOIN BidDocument bid ON plan.bid_id = bid.bid_id
+	LEFT JOIN Account account ON bid.user_id = account.user_id
+	WHERE
+		plan.repay_type = 0
+	
+	<if test="pageVo!=null">
+		<if test="pageVo.parameters!=null">
+			<if test="pageVo.parameters.repay_start!=null">
+				and plan.repayday >= #{pageVo.parameters.repay_start}
+			</if>
+			<if test="pageVo.parameters.repay_end!=null">
+				and plan.repayday <![CDATA[<=]]>#{pageVo.parameters.repay_end}
+			</if> 
+			<if test="pageVo.parameters.is_reinvest!=null">
+				and plan.is_reinvest = #{pageVo.parameters.is_reinvest}
+			</if>
+			<if test="pageVo.parameters.user_id!=null">
+				and bid.user_id=#{pageVo.parameters.user_id}
+			</if>
+			<if test="pageVo.parameters.bid_id!=null">
+				and bid.bid_id=#{pageVo.parameters.bid_id}
+			</if>
+			<if test="pageVo.parameters.bid_name!=null">
+				and bid.bid_name=#{pageVo.parameters.bid_name}
+			</if>
+			<if test="pageVo.parameters.package_id!=null">
+				and plan.package_id=#{pageVo.parameters.package_id}
+			</if>
+		</if>
+	</if>
+  
+  </select>
+	
+	<select id="getPackageUnRepay" resultMap="BaseResultMap">
+	select 
+		bid_id, issue, repay_type, principal, interest, repayday, state,repay_state,is_reinvest,plan.package_id as package_id,process_bank_state
+		from Repayplan plan left join finance_urgent_quit fuq on plan.package_id=fuq.package_id and fuq.quit_state!=0
+		where plan.is_package=1
+		and repay_type = 0
+		and (DATE_FORMAT(repayday, "%Y-%m-%d")=DATE_FORMAT(now(), "%Y-%m-%d") or DATE_FORMAT(repayday, "%Y-%m-%d")=DATE_FORMAT(fuq.preset_cash_time, "%Y-%m-%d"))
+		and state=0
+	</select>
+	
+	<select id="statAlreadyDueIssue" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			`Repayplan`
+		WHERE
+			`Repayplan`.`repay_state` = 10
+		AND `Repayplan`.`bid_id` = #{bidId}
+		AND `Repayplan`.`issue` IN (#{issue}, #{issue}-1, #{issue}-2)
+		AND `Repayplan`.`repay_type` = 0
+	</select>
+	<!-- 更新还款状态 -->
+	<update id="updateRepurchaseState" parameterType="com.hexin.domain.hexin6.Repayplan">
+		update Repayplan
+		<set >
+	      <if test="isRepurchase != null" >
+	        is_repurchase = #{isRepurchase,jdbcType=TINYINT},
+	      </if>
+	      <if test="repurchaseState != null" >
+	        repurchase_state = #{repurchaseState,jdbcType=TINYINT},
+	      </if>
+      </set>
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		and issue >= #{issue,jdbcType=INTEGER}
+	</update>
+	<!-- 当前时间距离当期还款日天数 -->
+	<select id="statDaysToRepayDay" resultType="java.lang.Integer">
+		SELECT
+			TO_DAYS(Repayplan.`repayday`) - TO_DAYS(NOW())
+		FROM
+			Repayplan
+		WHERE
+			Repayplan.`bid_id` = #{bidId}
+		AND Repayplan.`issue` = #{issue}
+		AND Repayplan.`repay_type` = 0
+	</select>
+	<!-- 查询所有标的待还款 -->
+	<select id="getAllBidRepay"  resultType="map">
+		SELECT
+			IFNULL(sum(`repayplan`.`principal`),0) AS `principal_to_repay`,
+			IFNULL(sum(`repayplan`.`interest`),0) AS `interest_to_repay`
+
+		FROM
+			Repayplan AS `repayplan`
+		JOIN BidDocument AS `biddocument` ON `repayplan`.`bid_id` = `biddocument`.`bid_id`
+		AND `repayplan`.`repay_type` = 0
+		AND repayplan.state = 0
+	</select>
+	<!-- 查询所有理财包待还款 -->
+	<select id="getAllPackageRepay" resultType="map">
+		select 
+			IFNULL(sum(finance_package.plan_cash_money), 0) finance_to_repay 
+		from `finance_package` 
+		where 
+			state = 30
+	</select>
+	<select id="getTotalWaitingRepay" resultType="map">
+		 SELECT
+			sum(plan.principal + plan.interest) AS repay_all
+		FROM
+			Repayplan plan
+		LEFT JOIN BidDocument bid ON plan.bid_id = bid.bid_id
+		LEFT JOIN Account account ON bid.user_id = account.user_id
+		WHERE
+			plan.repay_type = 0 and bid.for_package = 1
+		<if test="pageVo!=null">
+			<if test="pageVo.parameters!=null">
+				<if test="pageVo.parameters.repay_start!=null">
+					and plan.repayday >= #{pageVo.parameters.repay_start}
+				</if>
+				<if test="pageVo.parameters.repay_end!=null">
+					and plan.repayday <![CDATA[<=]]>#{pageVo.parameters.repay_end}
+				</if>
+				<if test="pageVo.parameters.is_reinvest!=null">
+					and plan.is_reinvest = #{pageVo.parameters.is_reinvest}
+				</if>
+				<if test="pageVo.parameters.user_id!=null">
+					and bid.user_id=#{pageVo.parameters.user_id}
+				</if>
+				<if test="pageVo.parameters.bid_id!=null">
+					and bid.bid_id=#{pageVo.parameters.bid_id}
+				</if>
+				<if test="pageVo.parameters.bid_name!=null">
+					and bid.bid_name like concat(#{pageVo.parameters.bid_name},'%')
+				</if>
+				<if test="pageVo.parameters.package_id!=null">
+					and plan.package_id=#{pageVo.parameters.package_id}
+				</if>
+				<if test="pageVo.parameters.user_name!=null">
+					and bid.user_name like concat(#{pageVo.parameters.user_name},'%')
+				</if>
+				<if test="pageVo.parameters.state!=null">
+					and plan.state = #{pageVo.parameters.state}
+				</if>
+				<if test="pageVo.parameters.bid_from_type!=null">
+					and bid.bid_from_type = #{pageVo.parameters.bid_from_type}
+				</if>
+				<if test="pageVo.parameters.repay_state!=null">
+					and plan.repay_state=#{pageVo.parameters.repay_state}
+				</if>
+			</if>
+		</if>
+	</select>
+	
+	<!-- 查询待还款 -->
+	<select id="searchNowWaitRepayment" resultType="Map">
+	<![CDATA[
+	     SELECT
+			/*TO_COUNT*/
+			`Repayplan`.`bid_id` AS `bid_id`,
+			`BidDocument`.`bid_name` AS `bid_name`,
+			`BidDocument`.`bid_type` AS `bid_type`,
+			`BidDocument`.`user_id` AS `bid_borrower_id`,
+			`BidDocument`.`guarantee` AS `guarantee_id`,
+			`BidDocument`.`repayment_type` AS `bid_repayment_type`,
+			`BidDocument`.rate AS `rate`,
+			 BidDocument.bid_from_type as bid_from_type,
+			 BidDocument.is_quit as is_quit,
+			`BidDocument`.loan_time as loan_time,
+			ifnull(`BidDocument`.duration, 0) AS `bid_duration`,
+			`BidDocument`.money AS `money`,
+			`BidDocument`.issue_done AS `issue_done`,
+			`BidDocument`.join_issue,
+			`BidDocument`.for_package,
+			DATE_FORMAT(
+				`BidDocument`.transact_time,
+				"%Y-%m-%d %H:%i:%s"
+			) AS `start_time`,
+			`Repayplan`.`issue` AS `repay_issue`,
+			DATE_FORMAT(
+				`Repayplan`.`repayday`,
+				"%Y-%c-%d %H:%i:%s"
+			) AS `ts_repay_due`,
+			`Repayplan`.`principal` AS `principal_to_repay`,
+			`Repayplan`.`interest` AS `interest_to_repay`,
+		    `Repayplan`.`repay_type` as repay_type,
+		    `Repayplan`.`is_reinvest` as is_reinvest,
+		    `Repayplan`.`package_id` as package_id,
+		IF(Repayplan.repay_state=10,1,IF (
+			(`Repayplan`.`state` = 0),
+		
+		IF (
+			(
+				(
+					TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+				) > 0
+			),
+			(
+				TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+			),
+			0
+		),
+		 0
+		)) AS `days_overdue`,
+		 ROUND(
+			(
+				(
+		
+					IF (
+						(`Repayplan`.`state` = 0),
+		
+					IF (
+						(
+							(
+								TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+							) > 0
+						),
+						(
+							TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+						),
+						0
+					),
+					0
+					) * `BidDocument`.`delaypayment_fee_rate`
+				) * (
+					`Repayplan`.`principal` + `Repayplan`.`interest`
+				)
+			)
+		,2) AS `punish_to_repay`,
+		
+		IF (
+			(`Repayplan`.`state` = 0),
+		
+		IF (
+			(
+				(
+					TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+				) <= 0
+			),
+			`BidDocument`.`remain_principal`,
+			0
+		),
+		 0
+		) AS `principal_remain`,
+		 `BidDocument`.`remain_interest` AS `interest_remain`,
+		 concat(`BidDocument`.`prepayment_fee_rate`,"") AS `prepayment_fee_rate`,
+		 ROUND(
+		
+			IF (
+				(`Repayplan`.`state` = 0),
+				(
+		
+					IF (
+						(
+							(
+								TO_DAYS(NOW()) - TO_DAYS(`Repayplan`.`repayday`)
+							) < 0
+						),
+						`BidDocument`.`remain_principal`,
+						0
+					) * `BidDocument`.`prepayment_fee_rate`
+				),
+				0
+			)
+		,2) AS `liquidated_damages`,
+		 `Repayplan`.`state` AS `state`,
+		 Repayplan.repay_state as repay_state
+		FROM
+			(
+				(
+					`Repayplan`
+					JOIN `BidDocument` ON (
+						(
+							(
+								`Repayplan`.`bid_id` = `BidDocument`.`bid_id`
+							)
+							AND (`Repayplan`.`repay_type` = 0)
+							AND (`Repayplan`.`is_repurchase` = 0)
+							AND (`Repayplan`.`state` = 0)
+							AND `Repayplan`.is_package = #{is_package,jdbcType=INTEGER}
+							AND `Repayplan`.`repayday` = concat(#{repayDay,jdbcType=VARCHAR},' 00:00:00')
+							AND `BidDocument`.`bid_from_type` = 1
+						)
+					)
+				)
+			)
+			]]>
+	</select>
+
+	<select id="getRepurchaseListForPackage" resultType="Map">
+
+		select
+			`BidDocument`.`bid_id` `bid_id`
+		from
+			`BidDocument`
+		join `Repurchase`
+		on `BidDocument`.`bid_id` = Repurchase.`bid_id`
+		and `BidDocument`.`is_repurchase` = 1
+		join `Repayplan`
+		on `Repurchase`.`bid_id` = `Repayplan`.`bid_id`
+		and `Repayplan`.`issue` = `Repurchase`.`mark_issue`
+		AND `Repayplan`.`repay_type` = 0
+		AND `Repayplan`.`state` = 0
+		AND `Repayplan`.`repayday` = concat(#{repayDay,jdbcType=VARCHAR},' 00:00:00');
+
+	</select>
+
+	<select id="unRepayFirstIssue" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+
+		SELECT * FROM Repayplan WHERE bid_id=#{bidId} AND state =0 ORDER BY repayday ASC LIMIT 1;
+
+	</select>
+
+	<select id="getLastedRepayDate" parameterType="java.lang.Integer" resultType="date">
+		select
+			repayday
+		from `Repayplan`
+		where `bid_id` = #{bidId}
+		and `repay_type` = 0
+		ORDER BY `issue` desc limit 1
+	</select>
+
+	<select id="getCountBetween2Day" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			`Repayplan`
+		WHERE
+			repayday > #{startDate}
+			AND repayday  <![CDATA[<]]> #{endDate}
+			AND bid_id = #{bidId}
+			AND `repay_type` = 0
+			AND state = 2
+	</select>
+	<select id="getAllDebtBackAccountBalance" resultType="map">
+		select a.bank_account_id,bd.user_name,a.user_id_num from Account a left join BidDocument  bd 
+		on a.user_id= bd.user_id LEFT JOIN 
+		Repayplan pp on bd.bid_id=pp.bid_id 
+		where pp.repayday  <![CDATA[>=]]> #{startDate} and pp.repayday  <![CDATA[<=]]> #{endDate} GROUP BY pp.bid_id
+	 </select>
+	<select id="queryOverdueRepayAmountByUserId" resultType="map">
+		select sum(rp.principal)+sum(rp.interest) as overdue_amount from BidDocument bd 
+		INNER JOIN Repayplan rp  on bd.bid_id=rp.bid_id 
+		where bd.user_id=#{userId,jdbcType=VARCHAR} and rp.repay_state=10
+	</select>
+	<select id="queryOverdueListByUserId" resultType="map">
+		select bd.bid_id,bd.user_id from BidDocument bd INNER JOIN Repayplan rp  on bd.bid_id=rp.bid_id 
+		where bd.user_id=#{userId,jdbcType=VARCHAR} and rp.repay_state=10 
+	</select>
+	<select id="queryUnRepayAmountByUserId" resultType="map">
+		select sum(rp.principal)+sum(rp.interest) as unrepay_amount FROM BidDocument bd INNER JOIN Repayplan rp  
+		on bd.bid_id=rp.bid_id where user_id=#{userId,jdbcType=VARCHAR} and rp.state=0
+	</select>
+	<select id="queryAheadRepayListByUserId" resultType="map">
+		select bd.bid_id,bd.user_id from BidDocument bd INNER JOIN Repayplan rp  on bd.bid_id=rp.bid_id where 
+		bd.user_id=#{userId,jdbcType=VARCHAR}  and rp.state=1
+	</select>
+	
+	<select id="getRepayListForRepairAll" resultType="map">
+		SELECT
+		`BidDocument`.`bid_id`,
+		`BidDocument`.user_id bid_borrower_id,
+		Repayplan.issue repay_issue,
+		Repayplan.is_reinvest is_reinvest,
+		Repayplan.package_id package_id,
+		BidDocument.for_package,
+		Repayplan.`principal` + Repayplan.`interest` repaySu,
+		Account.`total_money`
+		FROM
+		Repayplan
+		JOIN `BidDocument` ON Repayplan.bid_id = `BidDocument`.bid_id
+		JOIN Account ON `BidDocument`.`user_id_num` = Account.`user_id_num`
+		WHERE
+		Repayplan.state = 0
+		AND `Repayplan`.`repayday` <![CDATA[<]]> '2017-04-19'
+		AND `Repayplan`.`repay_type` = 0
+		AND `BidDocument`.state = 10
+		AND `BidDocument`.`bid_from_type` = 1
+		and `BidDocument`.`is_repurchase` = 0
+		GROUP BY
+		`BidDocument`.`bid_id`
+		HAVING
+		SUM(1) = 1
+		ORDER BY total_money asc;
+	</select>
+
+	<select id="getRepayListForRepair" resultType="map">
+		select
+		`BidDocument`.bid_id,
+		`BidDocument`.user_id bid_borrower_id,
+		Repayplan.issue repay_issue,
+		Repayplan.is_reinvest is_reinvest,
+		Repayplan.package_id package_id,
+		BidDocument.for_package,
+		Repayplan.`principal` + Repayplan.`interest` repaySu,
+		Account.`total_money`,
+		Account.`bank_account_id`
+		from `BidDocument`
+		join Repayplan
+		on `BidDocument`.bid_id = Repayplan.bid_id
+		and  `Repayplan`.state = 0
+		and  Repayplan.`repayday` <![CDATA[<]]> '2017-04-13'
+		JOIN Account on Account.`user_id_num` = `BidDocument`.`user_id_num`
+		where  `BidDocument`.`bid_id` in (4878034,4897040,4898521,4899100,4907472,4915726,4917962,4945984,4945994,4946000,4946078,4946261,4946363,4946475,4946556,4946567,4946654,4946726,4946865,4946933,4947040,4947190,4947452,4949224,4949306,4949395,4949443,4949445,4949517,4949590,4949672,4949709,4949759,4950430,4950989,4951082,4951298,4951355,4972288,4974496,4974986,4980555,4981060,4981499,4981643,4981779,4982077,4982121,4982171,4982284,4982312,4982365,4982558,4982787,4982792,4982941,4983238,4983397,5014750,5015172,5015248,6737675,6737712,6737746,9095369,9095378,9095382,9095391,9095396,9095407,9095410,9095413,9095421,9095431,9095460,9095463,9095483,9095517,9095536,9095559,9095562,9226664,9226716,9226725,9226732,9226745,9226755,9226759,9226768,9226771,12131533,12131542,12131581,12131672,12131718,12131777,12131787,12131815,12131850,12131870,12131933,12132034,12132093,12132096,12132127,12132152,12132187,12174870,12174877,12174943,12174958,12174964,12174974,12174983,12175005,12175013,12175022,12175053,12175108,12175115,12175127,12175138,12248589,12248601,12248619,12248644,12248647,12248651,12248664,12248673,12248691,12248754,12248788,12248801,12280945,12280948,12280952,12280957,12280980,12280984,12281044,12281084,12281095,12400045,12400056,12400079,12400095,12400115,12400129,12400152,12400218,12400243,12400265,12400322,12400328,12400346,12400374,12527615,15893184,15912608,16020422,16044316,16044359,16172339,16174688,16174696,16174710,16174720,18070655,18070822,19170262,19170266,19170275,19170279,19170314,19170317,19170327,19170333,19170336,19170343,19170390,19170393,19170410,19170436,19170443,19170468,19170496,19170506,19170537,19170554,19170560,19170564,19170578,19170594,19170600,19170604,19176060,19176064,19176074,19176081,19176110,19176138,19176150,19176154,19176169,19176172,19176184,19176190,19176194,19176203,19176217,19176245,19176267,19176288,19176298,19176321,19176349,19176427,19176438,19176449,19187585,19187603,19187606,19187609,19187657,19187717,19187749,19187803,19187848,19187851,19187857,19187868,19187887,19187896,19187899,19187922,19187925,19188011,19188014,19188018,19487878,19487882,19487886,19487895,19487987,19488018,19488043,19488052,19488063,19488105,19514994,19515012,20548357,22220685,22220688,22220697,22220707,22220711,22220714,22220721,22220727,22220744,22220753,22220756,22220759,22220762,22220771,22220792,22220795,22220862,22220868,22220903,22220970,22340008,22340052,22340089,22417734,22417761,22417863,22417879,22417891,24850450,26537060,27279890,27279896,27279909,27279915,27279918,27279922,27279937,27279957,27279964,27279967,27279976,27279993,27280010,27280138,27387334,27387344,27387348,27387351,27387368,27387372,27461672,27461730,27461733,27461755,27461768,27461776,27461785,27461788,27461797,27461808,27461820,27461828,27462127,27462130,27462145,27462161,27609895,27609907,27609910,27609917,27609974,27609991,27610004,27610007,27610014,27610017,27610027,27610038,27610045,27610072,27610089,27610135,27610138,27610159,27610165,27610180,27610194,29094961,29094964,29094968,29094980,29167622,29243436,29243445,29243472,29243475,29243478,29286049,29286055,29286058,29286078,29286082,29286102,29286108,29286112,29286125,29286139,29286143,29286147,29286164,29286176,29286189,29286226,29286247,29286254,29286259,29286269,29286288,29286297,29286325,29286332,29286339,29286342,29539919,29539925,29540077,29540100,29540163,29540169,29540180,29540186,29540327,29540343,29540346,29540370,29540379,29540456,31195542,31195644,31195700,31287631,31287670,31287680,31287745,31287794,31287868,31287906,31287920,31287938,31287953,31288073,31360675,31360719,31360766,31360769,31360781,31360917,31360935,31360941,31574548,31574552,31574737,31574774,31574972,31574992,31575024,31575044,31642757,31642794,31661599,31661690,31661852,31661970,31661998,31662026,31662036,31662075,31662138,31676041,31676054,31676068,31676141,31804220,31804525,36984960,36985433,37108111,37108118,37108131,37108161,37108167,37108186,37108196,37108204,37108207,37108213,37108216,37108251,37108254,37108298,37108341,37108344,37108369,37108408,37108613,37432631,37432634,37432649,37432659,37432669,37432676,37432688,37432701,37432710,37432719,37432742,37432761,37432767,37432772,37432776,37432779,37432782,37432789,37432794,37432820,37432827,37432830,37432860,37432876,37432879,37432882,37432891,37432894,37432910,37432930,37432933,37437172,37486278,37486287,37486290,37486293,37486316,37486324,37486336,37486354,37486360,37486365,37486377,37486384,37486388,37486394,37486398,37486409,37486412,37486418,37633918,37633941,37633946,39383336,39383387,39383439,39383457,39383467,39383499,39383509,39383521,39383530,39383533,39383597,39383651,39383670,39383674,39383706) group by `BidDocument`.bid_id having Repayplan.issue = MIN(Repayplan.issue) order by `total_money` ;
+	</select>
+</mapper>

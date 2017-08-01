@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Dao 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hexin.mapper.hexin6.InvestMapper">
+
+<resultMap id="BaseResultMap" type="com.hexin.domain.hexin6.Invest" >
+    <result column="action_sn" property="actionSn" jdbcType="INTEGER" />
+    <result column="bid_id" property="bidId" jdbcType="INTEGER" />
+    <result column="invest_money" property="investMoney" jdbcType="DECIMAL" />
+    <result column="auto" property="auto" jdbcType="INTEGER" />
+    <result column="deal_money" property="dealMoney" jdbcType="DECIMAL" />
+    <result column="expect_interest" property="expectInterest" jdbcType="DECIMAL" />
+    <result column="expect_reward" property="expectReward" jdbcType="DECIMAL" />
+    <result column="money_from_recharge" property="moneyFromRecharge" jdbcType="DECIMAL" />
+    <result column="money_from_principal" property="moneyFromPrincipal" jdbcType="DECIMAL" />
+    <result column="money_from_income" property="moneyFromIncome" jdbcType="DECIMAL" />
+    <result column="money_from_repayment" property="moneyFromRepayment" jdbcType="DECIMAL" />
+    <result column="money_from_loan" property="moneyFromLoan" jdbcType="DECIMAL" />
+    <result column="money_from_loan_netvalue" property="moneyFromLoanNetvalue" jdbcType="DECIMAL" />
+    <result column="money_from_decimal" property="moneyFromDecimal" jdbcType="DECIMAL" />
+    <result column="jobid" property="jobid" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_is_vip" property="userIsVip" jdbcType="INTEGER" />
+    <result column="ts_submit" property="tsSubmit" jdbcType="TIMESTAMP" />
+    <result column="finance_package_id" property="financePackageId" jdbcType="INTEGER" />
+    <result column="is_finance_package" property="isFinancePackage" jdbcType="INTEGER" />
+    <result column="fn_user_id" property="fnUserId" jdbcType="VARCHAR" />
+    <result column="fn_user_name" property="fnUserName" jdbcType="VARCHAR" />
+    <result column="fn_invest_time" property="fnInvestTime" jdbcType="TIMESTAMP" />
+    <result column="fn_account_id" property="fnAccountId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="current_level" property="currentLevel" jdbcType="INTEGER" />
+    <result column="expect_plus_rate" property="expectPlusRate" jdbcType="INTEGER" />
+    <result column="voucher_money" property="voucherMoney" jdbcType="DECIMAL" />
+    <result column="user_id_num" property="userIdNum" jdbcType="INTEGER" />
+    <result column="auth_code" property="authCode" jdbcType="VARCHAR" />
+    <result column="coupon_type" jdbcType="TINYINT" property="couponType" />
+  </resultMap>
+  
+   <sql id="Base_Column_List" >
+	    action_sn, bid_id, invest_money, auto, deal_money, expect_interest,  expect_reward, money_from_recharge, money_from_principal, 
+      money_from_income, money_from_repayment, money_from_loan, money_from_loan_netvalue, money_from_decimal, jobid, user_id, 
+      user_is_vip, ts_submit, finance_package_id,is_finance_package, fn_user_id, fn_user_name,
+      fn_invest_time, fn_account_id, type, current_level, voucher_money, user_id_num, auth_code,coupon_type
+	</sql>
+	
+	<resultMap id="ResultMap" type="com.hexin.dto.InvestAssetDTO">
+		<result column="type" property="investType" jdbcType="TINYINT" />
+		<result column="quota" property="quota" jdbcType="DECIMAL" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />	
+	</resultMap>
+	
+  <insert id="insert" parameterType="com.hexin.domain.hexin6.Invest" >
+    insert into Invest (action_sn, bid_id, invest_money, 
+      auto, deal_money, expect_interest, 
+      expect_reward, money_from_recharge, money_from_principal, 
+      money_from_income, money_from_repayment, money_from_loan, 
+      money_from_loan_netvalue, money_from_decimal, jobid, user_id, 
+      user_is_vip, ts_submit, finance_package_id, 
+      is_finance_package, fn_user_id, fn_user_name, 
+      fn_invest_time, fn_account_id, type, 
+      current_level,expect_plus_rate,voucher_money,user_id_num,auth_code,coupon_type)
+    values (#{actionSn,jdbcType=INTEGER}, #{bidId,jdbcType=INTEGER}, #{investMoney,jdbcType=DECIMAL}, 
+      #{auto,jdbcType=INTEGER}, #{dealMoney,jdbcType=DECIMAL}, #{expectInterest,jdbcType=DECIMAL}, 
+      #{expectReward,jdbcType=DECIMAL}, #{moneyFromRecharge,jdbcType=DECIMAL}, #{moneyFromPrincipal,jdbcType=DECIMAL}, 
+      #{moneyFromIncome,jdbcType=DECIMAL}, #{moneyFromRepayment,jdbcType=DECIMAL}, #{moneyFromLoan,jdbcType=DECIMAL}, 
+      #{moneyFromLoanNetvalue,jdbcType=DECIMAL}, #{moneyFromDecimal,jdbcType=DECIMAL}, #{jobid,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, 
+      #{userIsVip,jdbcType=INTEGER}, #{tsSubmit,jdbcType=TIMESTAMP}, #{financePackageId,jdbcType=INTEGER}, 
+      #{isFinancePackage,jdbcType=INTEGER}, #{fnUserId,jdbcType=VARCHAR}, #{fnUserName,jdbcType=VARCHAR}, 
+      #{fnInvestTime,jdbcType=TIMESTAMP}, #{fnAccountId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{currentLevel,jdbcType=INTEGER},#{expectPlusRate,jdbcType=DECIMAL},#{voucherMoney,jdbcType=DECIMAL},#{userIdNum,jdbcType=INTEGER},
+      #{authCode,jdbcType=VARCHAR},#{couponType,jdbcType=TINYINT})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.hexin.domain.hexin6.Invest" >
+    insert into Invest
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="actionSn != null" >
+        action_sn,
+      </if>
+      <if test="bidId != null" >
+        bid_id,
+      </if>
+      <if test="investMoney != null" >
+        invest_money,
+      </if>
+      <if test="auto != null" >
+        auto,
+      </if>
+      <if test="dealMoney != null" >
+        deal_money,
+      </if>
+      <if test="expectInterest != null" >
+        expect_interest,
+      </if>
+      <if test="expectReward != null" >
+        expect_reward,
+      </if>
+      <if test="moneyFromRecharge != null" >
+        money_from_recharge,
+      </if>
+      <if test="moneyFromPrincipal != null" >
+        money_from_principal,
+      </if>
+      <if test="moneyFromIncome != null" >
+        money_from_income,
+      </if>
+      <if test="moneyFromRepayment != null" >
+        money_from_repayment,
+      </if>
+      <if test="moneyFromLoan != null" >
+        money_from_loan,
+      </if>
+      <if test="moneyFromLoanNetvalue != null" >
+        money_from_loan_netvalue,
+      </if>
+      <if test="moneyFromDecimal != null" >
+        money_from_decimal,
+      </if>
+      <if test="jobid != null" >
+        jobid,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userIsVip != null" >
+        user_is_vip,
+      </if>
+      <if test="tsSubmit != null" >
+        ts_submit,
+      </if>
+      <if test="financePackageId != null" >
+        finance_package_id,
+      </if>
+      <if test="isFinancePackage != null" >
+        is_finance_package,
+      </if>
+      <if test="fnUserId != null" >
+        fn_user_id,
+      </if>
+      <if test="fnUserName != null" >
+        fn_user_name,
+      </if>
+      <if test="fnInvestTime != null" >
+        fn_invest_time,
+      </if>
+      <if test="fnAccountId != null" >
+        fn_account_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="currentLevel != null" >
+        current_level,
+      </if>
+      <if test="expectPlusRate != null" >
+        expect_plus_rate,
+      </if>
+      <if test="voucherMoney != null" >
+        voucher_money,
+      </if>
+      <if test="authCode != null" >
+        auth_code,
+      </if>
+      <if test="couponType != null">
+        coupon_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="actionSn != null" >
+        #{actionSn,jdbcType=INTEGER},
+      </if>
+      <if test="bidId != null" >
+        #{bidId,jdbcType=INTEGER},
+      </if>
+      <if test="investMoney != null" >
+        #{investMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="auto != null" >
+        #{auto,jdbcType=INTEGER},
+      </if>
+      <if test="dealMoney != null" >
+        #{dealMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="expectInterest != null" >
+        #{expectInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="expectReward != null" >
+        #{expectReward,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyFromRecharge != null" >
+        #{moneyFromRecharge,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyFromPrincipal != null" >
+        #{moneyFromPrincipal,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyFromIncome != null" >
+        #{moneyFromIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyFromRepayment != null" >
+        #{moneyFromRepayment,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyFromLoan != null" >
+        #{moneyFromLoan,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyFromLoanNetvalue != null" >
+        #{moneyFromLoanNetvalue,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyFromDecimal != null" >
+        #{moneyFromDecimal,jdbcType=DECIMAL},
+      </if>
+      <if test="jobid != null" >
+        #{jobid,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userIsVip != null" >
+        #{userIsVip,jdbcType=INTEGER},
+      </if>
+      <if test="tsSubmit != null" >
+        #{tsSubmit,jdbcType=TIMESTAMP},
+      </if>
+      <if test="financePackageId != null" >
+        #{financePackageId,jdbcType=INTEGER},
+      </if>
+      <if test="isFinancePackage != null" >
+        #{isFinancePackage,jdbcType=INTEGER},
+      </if>
+      <if test="fnUserId != null" >
+        #{fnUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="fnUserName != null" >
+        #{fnUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="fnInvestTime != null" >
+        #{fnInvestTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fnAccountId != null" >
+        #{fnAccountId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="currentLevel != null" >
+        #{currentLevel,jdbcType=INTEGER},
+      </if>
+      <if test="expectPlusRate != null" >
+        #{expectPlusRate,jdbcType=DECIMAL},
+      </if>
+      <if test="voucherMoney != null" >
+        #{voucherMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="authCode != null" >
+        #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="couponType != null">
+          #{coupon_type,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+	
+	<select id="getInvestsAndAsset" resultMap="ResultMap" parameterType="java.lang.Integer">
+		select
+			Invest.action_sn, 
+			Invest.bid_id, 
+			Invest.invest_money, 
+			Invest.auto, 
+			Invest.deal_money,
+			Invest. expect_interest,  
+			Invest.expect_reward, 
+			Invest.money_from_recharge,
+			Invest.money_from_principal, 
+      		Invest.money_from_income, 
+      		Invest.money_from_repayment,
+      		Invest.money_from_loan, 
+      		Invest.money_from_loan_netvalue, 
+      		Invest.money_from_decimal, 
+     		Invest.jobid, 
+     		Invest.user_id, 
+     		Invest.user_is_vip,
+       		Invest.ts_submit, 
+       		Invest.finance_package_id,
+      		Invest.is_finance_package, 
+     		Invest.fn_user_id,
+     		Invest.fn_user_name, 
+     		Invest.fn_invest_time, 
+      		Invest.fn_account_id,
+      		Invest.type,
+      		Invest.current_level
+		FROM Invest join Asset on
+			Invest.action_sn = Asset.invest_id
+			where Invest.bid_id = #{bidId,jdbcType=INTEGER}
+	</select>
+
+	<select id="queryInvestListByBidId" parameterType="integer" resultType="com.hexin.dto.InvestReviewDTO">
+		SELECT
+		`Invest`.`deal_money`AS `dealMoney`,
+		`Invest`.`voucher_money` AS `voucher_money`,
+		`Invest`.`action_sn` AS `investId`,
+		`Invest`.`money_from_recharge` AS `moneyFromRecharge`,
+		`Invest`.`money_from_principal` AS `moneyFromPrincipal`,
+		`Invest`.`money_from_income` AS `moneyFromIncome`,
+		`Invest`.`money_from_repayment` AS `moneyFromRepayment`,
+		`Invest`.`money_from_loan` AS `moneyFromLoan`,
+		`Invest`.`money_from_loan_netvalue` AS `moneyFromLoanNetvalue`,
+		`Invest`.`money_from_decimal` AS `moneyFromDecimal`,
+		`Invest`.`user_id` AS `investUserId`,
+		`Invest`.`user_is_vip` AS `investUserIsVip`,	
+		`Invest`.`is_finance_package` AS `isFinancePacakge`,
+		`Invest`.`finance_package_id` AS `financePackageId`,
+	    `Invest`.`fn_account_id` as 'fnAccountId'
+		FROM `Invest`
+		where `Invest`.`bid_id`=#{bidId}
+	</select>
+	
+	<!-- 关联贷款表，动作表，标信息表查询相关信息 -->
+	<select id="queryInvestListByBidIdForStopBid" parameterType="integer" resultType="map">
+		SELECT
+		`BidDocument`.`bid_name` AS `bidName`,
+		`BidDocument`.`bid_type` AS `bidType`,
+		`BidDocument`.`money` AS `bidMoney`,
+		`BidDocument`.`state` AS `state`,
+		`BidDocument`.`user_id` AS `borrower`,
+		`BidDocument`.`duration` AS `duration`,
+		`BidDocument`.`rate` AS `rate`,
+		`BidDocument`.`complete_money` AS `completeMoney`,
+		`BidDocument`.`consulting_fee` AS `consultingFee`,
+		`BidDocument`.`service_fee` AS `serviceFee`,
+		`Invest`.`jobid` AS `jobId`,
+		`Invest`.`user_id` AS `investUid`,
+		`Invest`.`user_is_vip` AS `userIsVip`,
+		`Invest`.`action_sn` AS `actionSn`,
+		`Invest`.`bid_id` AS `bidId`,
+		`Invest`.`auto` AS `auto`,
+		`Invest`.`invest_money` AS `investMoney`,
+		`Invest`.`deal_money` AS `dealMoney`,
+		`Invest`.`money_from_recharge` AS `moneyFromRecharge`,
+		`Invest`.`money_from_principal` AS `moneyFromPrincipal`,
+		`Invest`.`money_from_income` AS `moneyFromIncome`,
+		`Invest`.`money_from_repayment` AS `moneyFromRepayment`,
+		`Invest`.`money_from_loan` AS `moneyFromLoan`,
+		`Invest`.`money_from_loan_netvalue` AS `moneyFromLoanNetvalue`,
+		`Invest`.`money_from_decimal` AS `moneyFromDecimal`,
+		`Invest`.`expect_interest` AS `expectInterest`,
+		`Invest`.`expect_reward` AS `expectReward`,
+		`Invest`.`expect_plus_rate` AS `expectPlusRate`,
+		`Invest`.`ts_submit` AS `opTime`,
+		`Invest`.`auth_code` AS `authCode`
+		FROM
+			(
+				(
+					`Invest`
+					LEFT JOIN `BidDocument` ON (
+						(
+							`Invest`.`bid_id` = `BidDocument`.`bid_id`
+						)
+					)
+				)
+			)
+		WHERE
+			`Invest`.`bid_id` = #{bidId}
+			order by investUid
+	</select>
+	
+    <!-- 查询一段时间内累计投资 -->
+	<select id="queryInvestSumByUserIdTsTime" parameterType="map" resultType="DECIMAL">
+		SELECT/*TO_COUNT*/
+		 IF(SUM(`Invest`.`deal_money`) IS NULL ,0, SUM(`Invest`.`deal_money`)) AS `exchange_money_sum`
+		FROM
+		(
+		(
+		`Invest`
+		LEFT JOIN `BidDocument` ON (
+		(
+		`Invest`.`bid_id` = `BidDocument`.`bid_id`
+		)
+		)
+		)
+		) where 
+		      `Invest`.`user_id`=  #{userId,jdbcType=VARCHAR}
+		      and `Invest`.`ts_submit` <![CDATA[>=]]>  #{startOpTime,jdbcType=TIMESTAMP} 
+		      and `Invest`.`ts_submit` <![CDATA[<=]]>  #{endOpTime,jdbcType=TIMESTAMP}		       
+		      and (`BidDocument`.`state` = 10  or `BidDocument`.`state` = 15)
+		      and BidDocument.`for_package` = 0
+	</select>
+	
+	<select id="getAllInvestByUserIdAndBid" resultType="DECIMAL">
+		select SUM(`Invest`.`deal_money`) investSum
+		from `Invest` 
+		JOIN `BidDocument` 
+		on `BidDocument`.`bid_id` = `Invest`.`bid_id` 
+		and `BidDocument`.`for_package` = 0 
+		and `BidDocument`.`state` = 10
+		and `BidDocument`.`bid_id` = #{bidId} 
+		and `Invest`.`user_id` = #{userId}
+	</select>
+	
+	<!-- 查询一段时间内累计投资 -->
+	<select id="getInvestSumByUserIdTsTime" parameterType="map" resultType="DECIMAL">
+		SELECT/*TO_COUNT*/ IF(SUM(`Invest`.`deal_money`) IS NULL ,0, SUM(`Invest`.`deal_money`)) AS `exchange_money_sum`
+		FROM`Invest`
+        where `Invest`.`user_id`=  #{userId,jdbcType=VARCHAR}
+		and `Invest`.`ts_submit` <![CDATA[>=]]>  #{startOpTime,jdbcType=TIMESTAMP} 
+		and `Invest`.`ts_submit` <![CDATA[<=]]>  #{endOpTime,jdbcType=TIMESTAMP}	
+		and `Invest`.`is_finance_package` = 0       
+	</select>
+
+    <!-- 查询一段时间内累计投资(不包括代金券!!!) -->
+    <select id="getInvestSumByUserIdTsTimeWithoutVoucher" parameterType="map" resultType="DECIMAL">
+        SELECT/*TO_COUNT*/ IF(SUM(`Invest`.`invest_money`) IS NULL ,0, SUM(`Invest`.`invest_money`)) AS `exchange_money_sum`
+        FROM`Invest`
+        where `Invest`.`user_id`=  #{userId,jdbcType=VARCHAR}
+        and `Invest`.`ts_submit` <![CDATA[>=]]>  #{startOpTime,jdbcType=TIMESTAMP}
+        and `Invest`.`ts_submit` <![CDATA[<=]]>  #{endOpTime,jdbcType=TIMESTAMP}
+        and `Invest`.`is_finance_package` = 0
+    </select>
+	
+    <!--查询出借人投标数 -->
+	<select id="queryInvestCount" resultType="map">
+		select sum(investCount) investCount,sum(dealSum) dealSum,invest.userIdNum  userIdNum from 
+		(
+			select IFNULL(count(*), 0) AS investCount,
+			   	IFNULL(SUM(`deal_money`),0) AS dealSum,
+			   	Invest.`user_id_num` userIdNum
+				from Invest 
+				join `BidDocument` 
+				on Invest.`bid_id` = BidDocument.`bid_id` 
+				WHERE BidDocument.`for_package` = 0 and BidDocument.`state` in (10,15) 
+				<if test="startDate != null">
+			   		<if test="endDate != null">
+					and Invest.`ts_submit` BETWEEN #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
+			   		</if>
+			   	</if>
+				group by Invest.`user_id_num`
+		union 
+			select IFNULL(count(*), 0) AS investCount,
+				IFNULL(SUM(`deal_amount`),0) AS dealSum,
+				`finance_invest`.`user_id_num` userIdNum
+				from `finance_invest`
+				join `finance_package`
+				on finance_invest.`package_id` = `finance_package`.`id`
+				where `finance_package`.`state` in (30,35)
+				<if test="startDate != null">
+			   		<if test="endDate != null">
+					and finance_invest.`create_time` BETWEEN #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
+			   		</if>
+			   	</if>
+				group by `finance_invest`.`user_id_num`
+		) invest 
+				group by invest.userIdNum order by sum(dealSum) desc limit 10
+    </select>
+    
+    <select id="getInvestByActionSn" resultMap="BaseResultMap">
+    select 
+    	<include refid="Base_Column_List"/>
+    from Invest where action_sn = #{invest_id}
+    
+    </select>
+	
+	<!--根据用户查询投资和 -->
+	<select id="getInvestSumByUserId" parameterType="String" resultType="DECIMAL">
+		SELECT/*TO_COUNT*/
+		 IF(SUM(`Invest`.`deal_money`) IS NULL ,0, SUM(`Invest`.`deal_money`)) AS `exchange_money_sum`
+		FROM
+		(
+		(
+		`Invest`
+		LEFT JOIN `BidDocument` ON (
+		(
+		`Invest`.`bid_id` = `BidDocument`.`bid_id`
+		)
+		)
+		)
+		) 
+		where `Invest`.`user_id`=  #{userId,jdbcType=VARCHAR}
+	    and (`BidDocument`.`state` = 10  or `BidDocument`.`state` = 15)
+	    and BidDocument.`for_package` = 0
+	</select>
+
+	<!--根据用户查询投资和 -->
+	<select id="getInvestSum" parameterType="map" resultType="DECIMAL">
+		SELECT IFNULL(SUM(invest.deal_money), 0) AS sum FROM Invest AS invest
+		<where>
+			invest.user_id = #{userId, jdbcType=VARCHAR}
+			AND invest.bid_id = #{bidId, jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<!-- 查询大于当前时间的投资人 -->
+	<select id="getInvestAfterLastTime" parameterType="map" resultType="map">
+		SELECT 
+		`Invest`.user_id username,
+		`Invest`.deal_money amount, 
+		UNIX_TIMESTAMP(`Invest`.ts_submit) invest_time
+		FROM `Invest`
+        where `Invest`.`bid_id`=  #{bidId,jdbcType=INTEGER}
+        <if test="lastInvestTime != null" >
+		and `Invest`.`ts_submit` <![CDATA[>]]>  #{lastInvestTime,jdbcType=TIMESTAMP} 
+      	</if>
+		and `Invest`.`is_finance_package` = 0       
+	</select>
+	
+	<select id="selectInvestListByBidId" resultMap="BaseResultMap">
+	    select 
+	    	<include refid="Base_Column_List"/>
+	    from 
+	    Invest where bid_id = #{bidId,jdbcType=INTEGER}
+    </select>
+    
+
+    <!-- 查询截止到今日凌晨所有用户Invest投资额 -->
+    <select id="getAllInvestMoney" resultType="map">
+    	SELECT IFNULL(sum(`Invest`.`deal_money`), 0) as 'exchange_money_sum' 
+    	FROM `Invest` 
+    	LEFT JOIN 
+    	`BidDocument` 
+    	ON `Invest`.`bid_id` = `BidDocument`.`bid_id`
+    	where `BidDocument`.`state` in ( 10, 15 ) 
+    	and `Invest`.`ts_submit` <![CDATA[<=]]>  #{endDate}
+    	and `Invest`.`type` in (0,1,2,3,4)
+    </select>
+    
+    <!-- 查询昨日凌晨截止到今日凌晨所有用户Invest投资额 -->
+    <select id="getLastDayInvestMoney" resultType="map">
+    	select
+    		IFNULL(SUM(`money`), 0) AS 'exchange_money_sum'
+    	from 
+    		`BidDocument` 
+    	where 
+    		BidDocument.`transact_time` BETWEEN #{startDate} and #{endDate} 
+    	and BidDocument.`for_package` = 0;
+    </select>
+    
+    <!-- 查询昨日凌晨截止到今日凌晨所有用户FinanceInvest投资额 -->
+    <select id="getLastDayFinanceInvestMoney" resultType="map">
+    	select 
+    		IFNULL(SUM(amount), 0) AS 'exchange_money_sum_package'
+    	from 
+    		finance_package 
+    	where finance_package.`expect_end_time` BETWEEN #{startDate} and #{endDate}  and finance_package.state in (25, 30, 35, 21);
+    </select>
+    
+    <select id="selectInvestForCollectMonkeySortMoneyListByBidId" resultType="map" parameterType="integer">
+         SELECT 
+            user_id,bid_id,MAX(deal_money) AS deal_money 
+         FROM 
+         Invest  WHERE bid_id = #{bidId,jdbcType=INTEGER} GROUP BY user_id ORDER BY MAX(deal_money) DESC, ts_submit ASC , action_sn ASC LIMIT 0,8
+    </select>
+    
+    <select id="selectInvestForCollectMonkeySortTimeListByBidId" resultType="map" parameterType="integer">
+         SELECT 
+             user_id,bid_id,deal_money
+         FROM 
+         Invest WHERE bid_id = #{bidId,jdbcType=INTEGER}  ORDER BY ts_submit ASC, action_sn ASC  LIMIT 0,8
+
+    </select>
+    <!-- 更新投资的预期利息 -->
+    <update id="updateInvest">
+    	update
+    	   Invest
+    	set
+    	   expect_interest = #{expectInterest,jdbcType=DECIMAL}
+    	where
+    	   action_sn = #{actionSn,jdbcType=INTEGER}
+    </update>
+	<select id="sumInvestListByBidId" parameterType="integer" resultMap="BaseResultMap">
+		SELECT
+		`Invest`.`action_sn` AS `action_sn`,
+		`Invest`.`user_id` AS `user_id`,
+		`Invest`.`user_is_vip` AS `user_is_vip`
+		FROM `Invest`
+		where `Invest`.`bid_id`=#{bidId}
+		group by `Invest`.`user_id`
+	</select> 
+	   <select id="selectInvestByAssetId" resultMap="BaseResultMap">
+	      select  
+	      i.action_sn, i.bid_id, i.invest_money, i.auto, i.deal_money, i.expect_interest,  i.expect_reward, i.money_from_recharge, i.money_from_principal, 
+	      i.money_from_income, i.money_from_repayment, i.money_from_loan, i.money_from_loan_netvalue, i.money_from_decimal, i.jobid, i.user_id, 
+	      i.user_is_vip, i.ts_submit, i.finance_package_id,i.is_finance_package, i.fn_user_id, i.fn_user_name,
+	      i.fn_invest_time, i.fn_account_id, i.type, i.current_level, i.voucher_money, i.user_id_num, i.auth_code
+          from Asset a join Invest i on a.invest_id=i.action_sn 
+          where a.asset_id=#{assetId}
+    </select>
+      <select id="selectInvestedUserCount" resultType="int">
+    select
+      COUNT(*)
+    from (
+        select COUNT(1)
+        from `Invest`
+        where `bid_id` = #{bidId}
+      GROUP BY `user_id`
+    ) t
+    </select>
+    <select id="selectInvestedUserCountAndMoney" resultType="map">
+    	select COUNT(1) as count,sum(deal_money) as invested_money
+        from `Invest`
+        where `bid_id` = #{bidId}
+    </select>
+
+    <!-- 查询昨日凌晨截止到今日凌晨所有用户Invest投资额 -->
+    <select id="getAllBidDealMoney" resultType="map">
+        select
+        IFNULL(SUM(`money`), 0) AS 'exchange_money_sum'
+        from
+        `BidDocument`
+        where
+        BidDocument.`transact_time`  BETWEEN #{startDate} and #{endDate}
+        and BidDocument.`for_package` = 0
+        and `BidDocument`.`review_trial_state` in (10,11);
+    </select>
+
+    <select id="getAllFinanceDealMoney" resultType="map">
+        select
+        IFNULL(SUM(amount), 0) AS 'exchange_money_sum_package'
+        from
+        finance_package
+        where finance_package.`expect_end_time`  BETWEEN #{startDate} and #{endDate}  and finance_package.state in (25, 30, 35, 21);
+    </select>
+
+    <!-- 查询一段时间内累计投资(包括代金券，不包括新手标和新手荷包) -->
+    <select id="getInvestSumByUserIdToDay" parameterType="map" resultType="DECIMAL">
+        SELECT/*TO_COUNT*/ IF(SUM(`Invest`.`invest_money`) IS NULL ,0, SUM(`Invest`.`invest_money`)) AS `exchange_money_sum`
+        FROM`Invest` LEFT JOIN `BidDocument` ON `Invest`.`bid_id` = `BidDocument`.`bid_id`
+        where `Invest`.`user_id`=  #{userId,jdbcType=VARCHAR}
+        and `Invest`.`ts_submit` <![CDATA[>=]]>  #{startOpTime,jdbcType=TIMESTAMP}
+        and `Invest`.`ts_submit` <![CDATA[<=]]>  #{endOpTime,jdbcType=TIMESTAMP}
+        and `Invest`.`is_finance_package` = 0
+        AND `BidDocument`.`is_novice` = 0
+    </select>
+</mapper>

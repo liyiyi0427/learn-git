@@ -1,0 +1,1160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Dao 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hexin.mapper.hexin6.BidDocumentMapper">
+	<resultMap id="BaseResultMap" type="com.hexin.domain.hexin6.BidDocument" >
+    <id column="bid_id" property="bidId" jdbcType="INTEGER" />
+    <result column="bid_name" property="bidName" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_is_trustee" property="userIsTrustee" jdbcType="INTEGER" />
+    <result column="user_credit" property="userCredit" jdbcType="INTEGER" />
+    <result column="bid_type" property="bidType" jdbcType="INTEGER" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="duration" property="duration" jdbcType="INTEGER" />
+    <result column="repayment_type" property="repaymentType" jdbcType="INTEGER" />
+    <result column="rate" property="rate" jdbcType="DECIMAL" />
+    <result column="reward" property="reward" jdbcType="DECIMAL" />
+    <result column="loan_fee_rate" property="loanFeeRate" jdbcType="DECIMAL" />
+    <result column="prepayment_fee_rate" property="prepaymentFeeRate" jdbcType="DECIMAL" />
+    <result column="delaypayment_fee_rate" property="delaypaymentFeeRate" jdbcType="DECIMAL" />
+    <result column="minimum" property="minimum" jdbcType="DECIMAL" />
+    <result column="maximum" property="maximum" jdbcType="DECIMAL" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="auto_money" property="autoMoney" jdbcType="INTEGER" />
+    <result column="bid_detail" property="bidDetail" jdbcType="VARCHAR" />
+    <result column="repayment_detail" property="repaymentDetail" jdbcType="VARCHAR" />
+    <result column="guarantee" property="guarantee" jdbcType="VARCHAR" />
+    <result column="transact_time" property="transactTime" jdbcType="TIMESTAMP" />
+    <result column="end_of_invest" property="endOfInvest" jdbcType="TIMESTAMP" />
+    <result column="effect_time" property="effectTime" jdbcType="TIMESTAMP" />
+    <result column="expect_effect_time" property="expectEffectTime" jdbcType="TIMESTAMP" />
+    <result column="valid_days" property="validDays" jdbcType="INTEGER" />
+    <result column="complete_money" property="completeMoney" jdbcType="DECIMAL" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="issue_count" property="issueCount" jdbcType="INTEGER" />
+    <result column="issue_done" property="issueDone" jdbcType="INTEGER" />
+    <result column="issue_interest" property="issueInterest" jdbcType="INTEGER" />
+    <result column="publish_before_audit" property="publishBeforeAudit" jdbcType="TINYINT" />
+    <result column="credit_company_id" property="creditCompanyId" jdbcType="VARCHAR" />
+    <result column="credit_fee" property="creditFee" jdbcType="INTEGER" />
+    <result column="units" property="units" jdbcType="INTEGER" />
+    <result column="remain_principal" property="remainPrincipal" jdbcType="DECIMAL" />
+    <result column="remain_interest" property="remainInterest" jdbcType="DECIMAL" />
+    <result column="remain_reward" property="remainReward" jdbcType="DECIMAL" />
+    <result column="interest_sum" property="interestSum" jdbcType="DECIMAL" />
+    <result column="reward_sum" property="rewardSum" jdbcType="DECIMAL" />
+    <result column="contract_id" property="contractId" jdbcType="VARCHAR" />
+    <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="borrow_uname" property="borrowUname" jdbcType="VARCHAR" />
+    <result column="app_priority" property="appPriority" jdbcType="INTEGER" />
+    <result column="fail_time" property="failTime" jdbcType="TIMESTAMP" />
+    <result column="bid_type_second" property="bidTypeSecond" jdbcType="INTEGER" />
+    <result column="bid_borrow_user_identify" property="bidBorrowUserIdentify" jdbcType="VARCHAR" />
+    <result column="bid_mortgage_user_id" property="bidMortgageUserId" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="is_novice" property="isNovice" jdbcType="TINYINT" />
+    <result column="novice_invalid_time" property="noviceInvalidTime" jdbcType="TIMESTAMP" />
+    <result column="first_audit_user" property="firstAuditUser" jdbcType="VARCHAR" />
+    <result column="first_audit_time" property="firstAuditTime" jdbcType="TIMESTAMP" />
+    <result column="review_audit_user" property="reviewAuditUser" jdbcType="VARCHAR" />
+    <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP" />
+    <result column="canel_time" property="canelTime" jdbcType="TIMESTAMP" />
+    <result column="review_audit_time" property="reviewAuditTime" jdbcType="TIMESTAMP" />
+    <result column="fn_contract_id" property="fnContractId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="join_issue" property="joinIssue" jdbcType="INTEGER" />
+    <result column="review_detail" property="reviewDetail" jdbcType="VARCHAR" />
+    <result column="fn_join_state" property="fnJoinState" jdbcType="TINYINT" />
+    <result column="for_package" property="forPackage" jdbcType="TINYINT" />
+    <result column="delete_user_id" property="deleteUserId" jdbcType="VARCHAR" />
+    <result column="delete_time" property="deleteTime" jdbcType="TIMESTAMP" />
+    <result column="delete_reason" property="deleteReason" jdbcType="VARCHAR" />
+    <result column="apply_num" property="applyNum" jdbcType="VARCHAR" />
+    <result column="contract_money" property="contractMoney" jdbcType="DECIMAL" />
+    <result column="loan_time" property="loanTime" jdbcType="TIMESTAMP" />
+    <result column="real_rate" property="realRate" jdbcType="DECIMAL" />
+    <result column="create_user_name" property="createUserName" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="is_repurchase" property="isRepurchase" jdbcType="TINYINT" />
+    <result column="repurchase_state" property="repurchaseState" jdbcType="TINYINT" />
+    <result column="bid_plus_rate" property="plusRate" jdbcType="DECIMAL" />
+    <result column="remain_plus_rate" property="remainPlusRate" jdbcType="DECIMAL" />
+    <result column="is_plus_rate" property="isPlusRate" jdbcType="TINYINT" />
+    <result column="plus_rate_sum" property="plusRateSum" jdbcType="DECIMAL" />
+    <result column="is_renew" property="isRenew" jdbcType="TINYINT" />
+    <result column="user_id_num" property="userIdNum" jdbcType="INTEGER" />
+    <result column="first_trial_state" property="firstTrialState" jdbcType="INTEGER" />
+    <result column="review_trial_state" property="reviewTrialState" jdbcType="INTEGER" />
+    <result column="bid_from_type" property="bidFromType" jdbcType="TINYINT" />
+    <result column="consulting_fee" property="consultingFee" jdbcType="DECIMAL" />
+    <result column="service_fee" property="serviceFee" jdbcType="DECIMAL" />
+    <result column="is_quit" property="isQuit" jdbcType="TINYINT" />
+    <result column="loan_code" property="loanCode" jdbcType="VARCHAR" />
+    <result column="auditing_code" property="auditingCode" jdbcType="VARCHAR" />
+    <result column="quit_time" property="quitTime" jdbcType="TIMESTAMP" />
+    <result column="trusteeship_user_id" property="trusteeShipUserId" jdbcType="TIMESTAMP"/>
+    <result column="is_submit_full_review" property="isSubmitFullReview" jdbcType="TINYINT" />
+    <result column="is_repay" property="isRepay" jdbcType="TINYINT" />
+    <result column="can_withdrawal_amount" property="canWithdrawalAmount" jdbcType="DECIMAL" />
+    <result column="special_repayment_process_to_bank_state" property="specialRepaymentProcessToBankState" jdbcType="TINYINT" />
+    <result column="is_withdraw_service_fee_success" property="isWithdrawServiceFeeSuccess" jdbcType="TINYINT" />
+    <result column="withdraw_service_fee_loan_money" property="withdrawServiceFeeLoanMoney" jdbcType="DECIMAL" />
+    <result column="offline_bid_type" property="offlineBidType" jdbcType="TINYINT" />
+    <result column="is_mortgage_car" property="isMortgageCar" jdbcType="TINYINT" />
+    <result column="credit_rating" property="creditRating" jdbcType="VARCHAR"/>
+    <result column="customer_channel" property="customerChannel" jdbcType="TINYINT"/>
+    <result column="is_claim" property="isClaim" jdbcType="TINYINT" />
+    <result column="is_finish_claim" property="isFinishClaim" jdbcType="TINYINT" />
+    <result column="total_interest" property="totalInterest" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    bid_id, bid_name, user_id, user_is_trustee, user_credit, bid_type, money, duration, 
+    repayment_type, rate, reward, loan_fee_rate, prepayment_fee_rate, delaypayment_fee_rate, 
+    minimum, maximum, password, auto_money, bid_detail, repayment_detail, guarantee, 
+    transact_time, end_of_invest, effect_time, expect_effect_time, valid_days, complete_money, 
+    state, issue_count, issue_done, issue_interest, publish_before_audit, credit_company_id, 
+    credit_fee, units, remain_principal, remain_interest, remain_reward, interest_sum, 
+    reward_sum, contract_id, apply_time, borrow_uname, app_priority, fail_time, bid_type_second, 
+    bid_borrow_user_identify, bid_mortgage_user_id, parent_id, is_novice, novice_invalid_time, 
+    first_audit_user, first_audit_time, review_audit_user, publish_time, canel_time, 
+    review_audit_time, fn_contract_id, create_time, join_issue, review_detail, fn_join_state, 
+    for_package, delete_user_id, delete_time, delete_reason, apply_num, contract_money, 
+    loan_time, real_rate, create_user_name, user_name, bid_plus_rate, remain_plus_rate, is_plus_rate,plus_rate_sum,user_id_num,first_trial_state,review_trial_state,
+    bid_from_type, consulting_fee, service_fee, is_quit, loan_code,auditing_code,is_submit_full_review,is_repay,can_withdrawal_amount,special_repayment_process_to_bank_state
+    ,is_withdraw_service_fee_success,withdraw_service_fee_loan_money,offline_bid_type,is_mortgage_car,credit_rating,customer_channel,is_claim,is_finish_claim,total_interest
+  </sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from BidDocument
+		where bid_id = #{bidId,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectByBidId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from BidDocument
+		where bid_id = #{pageVo.parameters.bid_id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectByUserId" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM BidDocument
+		WHERE user_id = #{userId,jdbcType=VARCHAR} and state = 10 and can_withdrawal_amount > 0
+	</select>
+	<select id="selectBidsWaitingForReinvestByLogId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+			select
+				bid.bid_id,
+				bid.repayment_type,
+				bid.state,
+				bid.join_issue,
+				bid.fn_join_state,
+				bid.money,
+				bid.complete_money,
+				bid.rate,
+				bid.user_id,
+				bid.duration,
+				bid.loan_fee_rate,
+				bid.issue_done,
+				bid.bid_type,
+				bid.loan_time,
+				bid.bid_from_type,
+                bid.consulting_fee,
+                bid.service_fee,
+                bid.loan_code,
+                bid.customer_channel
+				from
+				finance_reinvest_bid_log as frbl
+			left join
+			finance_reinvest_bid_joined as frbj on(
+				frbl.id = frbj.reinvest_log_id
+				and frbj.markdel = 0
+		)
+			left join BidDocument as bid on(
+			frbj.bid_id = bid.bid_id
+		)
+		where
+			frbl.id = #{reinvestLogId,jdbcType=INTEGER}
+	</select>
+
+	<!-- add by yanshun 理财包标的动态查询列表 -->
+	<!--<select id="getBidsForFnPackage" resultType="map">-->
+		<!--SELECT-->
+			<!--<include refid="Base_Column_List" />-->
+			<!--, if(state=15,duration,issue_done) as issue_done_package,-->
+			<!--trusteeship_user_id as trust_user_id-->
+		<!--FROM-->
+			<!--BidDocument-->
+		  	<!--<where>-->
+		  	<!--BidDocument.for_package = 1	and BidDocument.state not in (11,40) and BidDocument.bid_from_type = 1-->
+		<!--<if test="pageVo !=null">-->
+		    <!--<if test="pageVo.parameters!=null">-->
+		    	<!--<if test="pageVo.parameters.create_begin_time!=null">-->
+		    	<!--and create_time <![CDATA[>=]]>#{pageVo.parameters.create_begin_time,jdbcType=TIMESTAMP}-->
+		    	<!--</if>-->
+		    	<!--<if test="pageVo.parameters.create_end_time!=null">-->
+		    	<!--and create_time <![CDATA[<=]]>#{pageVo.parameters.create_end_time,jdbcType=TIMESTAMP}-->
+		    	<!--</if>-->
+		    	<!--<if test="pageVo.parameters.loan_begin_time!=null">-->
+		    	<!--and loan_time <![CDATA[>=]]>#{pageVo.parameters.loan_begin_time,jdbcType=TIMESTAMP}-->
+		    	<!--</if>-->
+		    	<!--<if test="pageVo.parameters.loan_end_time!=null">-->
+		    	<!--and loan_time <![CDATA[<=]]>#{pageVo.parameters.loan_end_time,jdbcType=TIMESTAMP}-->
+		    	<!--</if>-->
+			   <!--<if test="pageVo.parameters.user_id!=null">-->
+			   	<!--and user_id = #{pageVo.parameters.user_id,jdbcType=VARCHAR}-->
+		   		 <!--</if>-->
+		   	  <!--<if test="pageVo.parameters.user_name!=null">-->
+			   	<!--and user_name = #{pageVo.parameters.user_name,jdbcType=VARCHAR}-->
+		   	  <!--</if>-->
+		   	 <!--<if test="pageVo.parameters.bid_state!=null">-->
+		   		 <!--and state =  #{pageVo.parameters.bid_state,jdbcType=TINYINT}-->
+		   	 <!--</if>-->
+		   	 <!--<if test="pageVo.parameters.bid_id!=null">-->
+		   	 	<!--and bid_id = #{pageVo.parameters.bid_id,jdbcType=INTEGER}-->
+		   	 <!--</if>-->
+		   	 <!--<if test="pageVo.parameters.bid_type_second!=null">-->
+		   	 	<!--and bid_type_second = #{pageVo.parameters.bid_type_second,jdbcType=INTEGER}-->
+		   	 <!--</if>-->
+		   	 <!--<if test="pageVo.parameters.apply_num!=null">-->
+		   	 	<!--and apply_num =  #{pageVo.parameters.apply_num,jdbcType=VARCHAR}-->
+		   	 <!--</if>-->
+		   	 <!--<if test="pageVo.parameters.fn_contract_id!=null">-->
+		   	 	<!--and fn_contract_id =  #{pageVo.parameters.fn_contract_id,jdbcType=VARCHAR}-->
+		   	 <!--</if>-->
+			<!--<if test="pageVo.parameters.bid_from_type!=null">-->
+		   	 	<!--and bid_from_type =  #{pageVo.parameters.bid_from_type,jdbcType=INTEGER}-->
+		   	 <!--</if>-->
+			<!--<if test="pageVo.parameters.bid_type!=null">-->
+		   	 	<!--and bid_type =  #{pageVo.parameters.bid_type,jdbcType=INTEGER}-->
+		   	 <!--</if>-->
+		<!--</if>-->
+		<!--</if>-->
+		<!--</where>-->
+  	<!--<if test="pageVo.sort!=null">-->
+		    <!--<foreach collection="pageVo.sort"  item="item" index="key" separator=","  open = " order by ">-->
+			       <!--${key} ${item}-->
+		    <!--</foreach>-->
+	 <!--</if>-->
+  <!--</select>-->
+   <insert id="insert" parameterType="com.hexin.domain.hexin6.BidDocument" >
+    insert into BidDocument (bid_id, bid_name, user_id,
+      user_is_trustee, user_credit, bid_type,
+      money, duration, repayment_type,
+      rate, reward, loan_fee_rate,
+      prepayment_fee_rate, delaypayment_fee_rate,
+      minimum, maximum, password,
+      auto_money, bid_detail, repayment_detail,
+      guarantee, transact_time, end_of_invest,
+      effect_time, expect_effect_time, valid_days,
+      complete_money, state, issue_count,
+      issue_done, issue_interest, publish_before_audit,
+      credit_company_id, credit_fee, units,
+      remain_principal, remain_interest, remain_reward,
+      interest_sum, reward_sum, contract_id,
+      apply_time, borrow_uname, app_priority,
+      fail_time, bid_type_second, bid_borrow_user_identify,
+      bid_mortgage_user_id, parent_id, is_novice,
+      novice_invalid_time, first_audit_user, first_audit_time,
+      review_audit_user, publish_time, canel_time,
+      review_audit_time, fn_contract_id, create_time,
+      join_issue, review_detail, fn_join_state,
+      for_package, delete_user_id, delete_time,
+      delete_reason, apply_num, contract_money,
+      loan_time, real_rate, create_user_name,
+      user_name,user_id_num
+      <if test="plusRate != null">
+      	,bid_plus_rate
+      </if>
+      <if test="remainPlusRate != null">
+      	,remain_plus_rate
+      </if>
+      <if test="isPlusRate != null">
+      	,is_plus_rate
+      </if>
+      <if test="plusRateSum != null">
+      	,plus_rate_sum
+      </if>
+      <if test="isRenew != null">
+      	,is_renew
+      </if>
+      <if test="bidFromType != null">
+      	,bid_from_type
+      </if>
+      <if test="consultingFee != null">
+      	,consulting_fee
+      </if>
+      <if test="serviceFee != null">
+      	,service_fee
+      </if>
+      <if test="isQuit != null">
+      	,is_quit
+      </if>
+      <if test="loanCode != null">
+      	,loan_code
+      </if>
+      <if test="auditingCode != null">
+      	,auditing_code
+      </if>
+      <if test="specialRepaymentProcessToBankState != null">
+      	,special_repayment_process_to_bank_state
+      </if>
+      <if test="offlineBidType != null">
+      	,offline_bid_type
+      </if>
+      <if test="isMortgageCar != null">
+      	,is_mortgage_car
+      </if>
+      <if test="creditRating != null">
+      	,credit_rating
+      </if>
+      <if test="customerChannel != null">
+      	,customer_channel
+      </if>
+      <if test="isWithdrawServiceFeeSuccess!=null">
+      	,is_withdraw_service_fee_success
+      </if>
+      <if test="totalInterest!=null">
+      	,total_interest
+      </if>
+      )
+    values (#{bidId,jdbcType=INTEGER}, #{bidName,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR},
+      #{userIsTrustee,jdbcType=INTEGER}, #{userCredit,jdbcType=INTEGER}, #{bidType,jdbcType=INTEGER}, 
+      #{money,jdbcType=DECIMAL}, #{duration,jdbcType=INTEGER}, #{repaymentType,jdbcType=INTEGER}, 
+      #{rate,jdbcType=DECIMAL}, #{reward,jdbcType=DECIMAL}, #{loanFeeRate,jdbcType=DECIMAL}, 
+      #{prepaymentFeeRate,jdbcType=DECIMAL}, #{delaypaymentFeeRate,jdbcType=DECIMAL}, 
+      #{minimum,jdbcType=DECIMAL}, #{maximum,jdbcType=DECIMAL}, #{password,jdbcType=VARCHAR}, 
+      #{autoMoney,jdbcType=INTEGER}, #{bidDetail,jdbcType=VARCHAR}, #{repaymentDetail,jdbcType=VARCHAR}, 
+      #{guarantee,jdbcType=VARCHAR}, #{transactTime,jdbcType=TIMESTAMP}, #{endOfInvest,jdbcType=TIMESTAMP}, 
+      #{effectTime,jdbcType=TIMESTAMP}, #{expectEffectTime,jdbcType=TIMESTAMP}, #{validDays,jdbcType=INTEGER}, 
+      #{completeMoney,jdbcType=DECIMAL}, #{state,jdbcType=INTEGER}, #{issueCount,jdbcType=INTEGER}, 
+      #{issueDone,jdbcType=INTEGER}, #{issueInterest,jdbcType=INTEGER}, #{publishBeforeAudit,jdbcType=TINYINT}, 
+      #{creditCompanyId,jdbcType=VARCHAR}, #{creditFee,jdbcType=INTEGER}, #{units,jdbcType=INTEGER}, 
+      #{remainPrincipal,jdbcType=DECIMAL}, #{remainInterest,jdbcType=DECIMAL}, #{remainReward,jdbcType=DECIMAL}, 
+      #{interestSum,jdbcType=DECIMAL}, #{rewardSum,jdbcType=DECIMAL}, #{contractId,jdbcType=VARCHAR}, 
+      #{applyTime,jdbcType=TIMESTAMP}, #{borrowUname,jdbcType=VARCHAR}, #{appPriority,jdbcType=INTEGER}, 
+      #{failTime,jdbcType=TIMESTAMP}, #{bidTypeSecond,jdbcType=INTEGER}, #{bidBorrowUserIdentify,jdbcType=VARCHAR}, 
+      #{bidMortgageUserId,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{isNovice,jdbcType=TINYINT}, 
+      #{noviceInvalidTime,jdbcType=TIMESTAMP}, #{firstAuditUser,jdbcType=VARCHAR}, #{firstAuditTime,jdbcType=TIMESTAMP}, 
+      #{reviewAuditUser,jdbcType=VARCHAR}, #{publishTime,jdbcType=TIMESTAMP}, #{canelTime,jdbcType=TIMESTAMP}, 
+      #{reviewAuditTime,jdbcType=TIMESTAMP}, #{fnContractId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{joinIssue,jdbcType=INTEGER}, #{reviewDetail,jdbcType=VARCHAR}, #{fnJoinState,jdbcType=TINYINT}, 
+      #{forPackage,jdbcType=TINYINT}, #{deleteUserId,jdbcType=VARCHAR}, #{deleteTime,jdbcType=TIMESTAMP}, 
+      #{deleteReason,jdbcType=VARCHAR}, #{applyNum,jdbcType=VARCHAR}, #{contractMoney,jdbcType=DECIMAL}, 
+      #{loanTime,jdbcType=TIMESTAMP}, #{realRate,jdbcType=DECIMAL}, #{createUserName,jdbcType=VARCHAR}, 
+      #{userName,jdbcType=VARCHAR},#{userIdNum,jdbcType=INTEGER}
+      <if test="plusRate != null">
+      	,#{plusRate,jdbcType=DECIMAL}
+      </if>
+      <if test="remainPlusRate != null">
+      	,#{remainPlusRate,jdbcType=DECIMAL}
+      </if>
+      <if test="isPlusRate != null">
+      	,#{isPlusRate,jdbcType=TINYINT}
+      </if>
+      <if test="plusRateSum != null">
+      	,#{plusRateSum,jdbcType=DECIMAL}
+      </if>
+      <if test="isRenew != null">
+      	,#{isRenew,jdbcType=INTEGER}
+      </if>
+      <if test="bidFromType != null">
+      	,#{bidFromType,jdbcType=TINYINT}
+      </if>
+      <if test="consultingFee != null">
+      	,#{consultingFee,jdbcType=DECIMAL}
+      </if>
+      <if test="serviceFee != null">
+      	,#{serviceFee,jdbcType=DECIMAL}
+      </if>
+      <if test="isQuit != null">
+      	,#{isQuit,jdbcType=TINYINT}
+      </if>
+      <if test="loanCode != null">
+      	,#{loanCode,jdbcType=VARCHAR}
+      </if>
+      <if test="auditingCode != null">
+      	,#{auditingCode,jdbcType=VARCHAR}
+      </if>
+      <if test="specialRepaymentProcessToBankState != null">
+      	,#{specialRepaymentProcessToBankState,jdbcType=TINYINT}
+      </if>
+      <if test="offlineBidType != null">
+      	,#{offlineBidType,jdbcType=TINYINT}
+      </if>
+      <if test="isMortgageCar != null">
+      	,#{isMortgageCar,jdbcType=TINYINT}
+      </if>
+       <if test="creditRating != null">
+      	,#{creditRating,jdbcType=VARCHAR}
+      </if>
+      <if test="customerChannel != null">
+      	,#{customerChannel,jdbcType=TINYINT}
+      </if>
+      <if test="isWithdrawServiceFeeSuccess != null">
+      	,#{isWithdrawServiceFeeSuccess,jdbcType=TINYINT}
+      </if>
+      <if test="totalInterest != null">
+      	,#{totalInterest,jdbcType=DECIMAL}
+      </if>
+      )
+  </insert>
+ <update id="updateByPrimaryKeySelective" parameterType="com.hexin.domain.hexin6.BidDocument" >
+    update BidDocument
+    <set >
+      <if test="bidName != null" >
+        bid_name = #{bidName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userIsTrustee != null" >
+        user_is_trustee = #{userIsTrustee,jdbcType=INTEGER},
+      </if>
+      <if test="userCredit != null" >
+        user_credit = #{userCredit,jdbcType=INTEGER},
+      </if>
+      <if test="bidType != null" >
+        bid_type = #{bidType,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="duration != null" >
+        duration = #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="repaymentType != null" >
+        repayment_type = #{repaymentType,jdbcType=INTEGER},
+      </if>
+      <if test="rate != null" >
+        rate = #{rate,jdbcType=DECIMAL},
+      </if>
+      <if test="reward != null" >
+        reward = #{reward,jdbcType=DECIMAL},
+      </if>
+      <if test="loanFeeRate != null" >
+        loan_fee_rate = #{loanFeeRate,jdbcType=DECIMAL},
+      </if>
+      <if test="prepaymentFeeRate != null" >
+        prepayment_fee_rate = #{prepaymentFeeRate,jdbcType=DECIMAL},
+      </if>
+      <if test="delaypaymentFeeRate != null" >
+        delaypayment_fee_rate = #{delaypaymentFeeRate,jdbcType=DECIMAL},
+      </if>
+      <if test="minimum != null" >
+        minimum = #{minimum,jdbcType=DECIMAL},
+      </if>
+      <if test="maximum != null" >
+        maximum = #{maximum,jdbcType=DECIMAL},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="autoMoney != null" >
+        auto_money = #{autoMoney,jdbcType=INTEGER},
+      </if>
+      <if test="bidDetail != null" >
+        bid_detail = #{bidDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="repaymentDetail != null" >
+        repayment_detail = #{repaymentDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="guarantee != null" >
+        guarantee = #{guarantee,jdbcType=VARCHAR},
+      </if>
+      <if test="transactTime != null" >
+        transact_time = #{transactTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endOfInvest != null" >
+        end_of_invest = #{endOfInvest,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectTime != null" >
+        effect_time = #{effectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectEffectTime != null" >
+        expect_effect_time = #{expectEffectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validDays != null" >
+        valid_days = #{validDays,jdbcType=INTEGER},
+      </if>
+      <if test="completeMoney != null" >
+        complete_money = #{completeMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="issueCount != null" >
+        issue_count = #{issueCount,jdbcType=INTEGER},
+      </if>
+      <if test="issueDone != null" >
+        issue_done = #{issueDone,jdbcType=INTEGER},
+      </if>
+      <if test="issueInterest != null" >
+        issue_interest = #{issueInterest,jdbcType=INTEGER},
+      </if>
+      <if test="publishBeforeAudit != null" >
+        publish_before_audit = #{publishBeforeAudit,jdbcType=TINYINT},
+      </if>
+      <if test="creditCompanyId != null" >
+        credit_company_id = #{creditCompanyId,jdbcType=VARCHAR},
+      </if>
+      <if test="creditFee != null" >
+        credit_fee = #{creditFee,jdbcType=INTEGER},
+      </if>
+      <if test="units != null" >
+        units = #{units,jdbcType=INTEGER},
+      </if>
+      <if test="remainPrincipal != null" >
+        remain_principal = #{remainPrincipal,jdbcType=DECIMAL},
+      </if>
+      <if test="remainInterest != null" >
+        remain_interest = #{remainInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="remainReward != null" >
+        remain_reward = #{remainReward,jdbcType=DECIMAL},
+      </if>
+      <if test="interestSum != null" >
+        interest_sum = #{interestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="rewardSum != null" >
+        reward_sum = #{rewardSum,jdbcType=DECIMAL},
+      </if>
+      <if test="contractId != null" >
+        contract_id = #{contractId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTime != null" >
+        apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="borrowUname != null" >
+        borrow_uname = #{borrowUname,jdbcType=VARCHAR},
+      </if>
+      <if test="appPriority != null" >
+        app_priority = #{appPriority,jdbcType=INTEGER},
+      </if>
+      <if test="failTime != null" >
+        fail_time = #{failTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bidTypeSecond != null" >
+        bid_type_second = #{bidTypeSecond,jdbcType=INTEGER},
+      </if>
+      <if test="bidBorrowUserIdentify != null" >
+        bid_borrow_user_identify = #{bidBorrowUserIdentify,jdbcType=VARCHAR},
+      </if>
+      <if test="bidMortgageUserId != null" >
+        bid_mortgage_user_id = #{bidMortgageUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="isNovice != null" >
+        is_novice = #{isNovice,jdbcType=TINYINT},
+      </if>
+      <if test="noviceInvalidTime != null" >
+        novice_invalid_time = #{noviceInvalidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="firstAuditUser != null" >
+        first_audit_user = #{firstAuditUser,jdbcType=VARCHAR},
+      </if>
+      <if test="firstAuditTime != null" >
+        first_audit_time = #{firstAuditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reviewAuditUser != null" >
+        review_audit_user = #{reviewAuditUser,jdbcType=VARCHAR},
+      </if>
+      <if test="publishTime != null" >
+        publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="canelTime != null" >
+        canel_time = #{canelTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reviewAuditTime != null" >
+        review_audit_time = #{reviewAuditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fnContractId != null" >
+        fn_contract_id = #{fnContractId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="joinIssue != null" >
+        join_issue = #{joinIssue,jdbcType=INTEGER},
+      </if>
+      <if test="reviewDetail != null" >
+        review_detail = #{reviewDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="fnJoinState != null" >
+        fn_join_state = #{fnJoinState,jdbcType=TINYINT},
+      </if>
+      <if test="forPackage != null" >
+        for_package = #{forPackage,jdbcType=TINYINT},
+      </if>
+      <if test="deleteUserId != null" >
+        delete_user_id = #{deleteUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteTime != null" >
+        delete_time = #{deleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteReason != null" >
+        delete_reason = #{deleteReason,jdbcType=VARCHAR},
+      </if>
+      <if test="applyNum != null" >
+        apply_num = #{applyNum,jdbcType=VARCHAR},
+      </if>
+      <if test="contractMoney != null" >
+        contract_money = #{contractMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="loanTime != null" >
+        loan_time = #{loanTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="realRate != null" >
+        real_rate = #{realRate,jdbcType=DECIMAL},
+      </if>
+      <if test="createUserName != null" >
+        create_user_name = #{createUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="isRepurchase != null" >
+        is_repurchase = #{isRepurchase,jdbcType=TINYINT},
+      </if>
+      <if test="repurchaseState != null" >
+        repurchase_state = #{repurchaseState,jdbcType=TINYINT},
+      </if>
+      <if test="plusRate != null" >
+        bid_plus_rate = #{plusRate,jdbcType=DECIMAL},
+      </if>
+      <if test="remainPlusRate != null" >
+        remain_plus_rate = #{remainPlusRate,jdbcType=DECIMAL},
+      </if>
+      <if test="isPlusRate != null" >
+        is_plus_rate = #{isPlusRate,jdbcType=TINYINT},
+      </if>
+      <if test="plusRateSum != null" >
+        plus_rate_sum = #{plusRateSum,jdbcType=DECIMAL},
+      </if>
+      <if test="isRenew != null" >
+        is_renew = #{isRenew,jdbcType=TINYINT},
+      </if>
+       <if test="firstTrialState != null" >
+        first_trial_state = #{firstTrialState,jdbcType=TINYINT},
+      </if>
+       <if test="reviewTrialState != null" >
+        review_trial_state = #{reviewTrialState,jdbcType=TINYINT},
+      </if>
+      <if test="isQuit != null" >
+          is_quit = #{isQuit,jdbcType=TINYINT},
+      </if>
+      <if test="quitTime != null">
+          quit_time = #{quitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSubmitFullReview != null">
+          is_submit_full_review = #{isSubmitFullReview,jdbcType=TINYINT},
+      </if>
+      <if test="isRepay != null">
+          is_repay = #{isRepay,jdbcType=TINYINT},
+      </if>
+      <if test="canWithdrawalAmount != null" >
+          can_withdrawal_amount = #{canWithdrawalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="specialRepaymentProcessToBankState != null" >
+          special_repayment_process_to_bank_state = #{specialRepaymentProcessToBankState,jdbcType=TINYINT},
+      </if>
+      <if test="isWithdrawServiceFeeSuccess != null" >
+          is_withdraw_service_fee_success = #{isWithdrawServiceFeeSuccess,jdbcType=TINYINT},
+      </if>
+      <if test="isClaim != null">
+          is_claim = #{isClaim,jdbcType=TINYINT},
+      </if>
+      <if test="isFinishClaim != null">
+          is_finish_claim = #{isFinishClaim,jdbcType=TINYINT}
+      </if>
+    </set>
+    where bid_id = #{bidId,jdbcType=INTEGER}
+  </update>
+
+
+  <update id="updateBidDocument" parameterType="map">
+ 		update BidDocument
+		<set>
+			<if test="updateBidDocument.completeMoney != null">
+				complete_money = #{updateBidDocument.completeMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="updateBidDocument.state != null">
+				state = #{updateBidDocument.state,jdbcType=INTEGER},
+			</if>
+		    <if test="updateBidDocument.specialRepaymentProcessToBankState != null" >
+		          special_repayment_process_to_bank_state = #{updateBidDocument.specialRepaymentProcessToBankState,jdbcType=TINYINT},
+		    </if>			
+		</set>
+		where bid_id = #{originalBidDocument.bidId,jdbcType=INTEGER}
+		and complete_money =
+		#{originalBidDocument.completeMoney,jdbcType=DECIMAL}
+		and state = #{originalBidDocument.state,jdbcType=INTEGER}
+		and special_repayment_process_to_bank_state = #{originalBidDocument.specialRepaymentProcessToBankState,jdbcType=INTEGER}
+ 	</update>
+
+    <update id="updateFullReviewStateForLendPay" parameterType="com.hexin.domain.hexin6.BidDocument" >
+      update BidDocument
+      set is_submit_full_review = #{isSubmitFullReview,jdbcType=TINYINT},
+      state = #{state,jdbcType=INTEGER}
+      where bid_id = #{bidId,jdbcType=INTEGER}
+      and is_submit_full_review = 0;
+
+    </update>
+
+
+	<update id="updateBidDocumentByInvest">
+		update BidDocument
+		set
+				state = IF((complete_money+#{dealMoney,jdbcType=BIGINT})=money,7,state),
+				complete_money = (complete_money+#{dealMoney,jdbcType=BIGINT})
+		where bid_id = #{bidId,jdbcType=INTEGER}
+		 and money >= (complete_money + #{dealMoney,jdbcType=BIGINT})
+	</update>
+
+		<update id="updateBidDocumentByDel" parameterType="map">
+		update BidDocument
+		<set>
+			<if test="updateBidDocument.deleteUserId != null">
+				delete_user_id = #{updateBidDocument.deleteUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateBidDocument.state != null">
+				state = #{updateBidDocument.state,jdbcType=INTEGER},
+			</if>
+				<if test="updateBidDocument.deleteReason != null">
+				delete_reason = #{updateBidDocument.deleteReason,jdbcType=VARCHAR},
+			</if>
+				<if test="updateBidDocument.deleteTime != null">
+				delete_time = #{updateBidDocument.deleteTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where bid_id = #{bid.bidId,jdbcType=INTEGER}
+
+		and state = #{bid.state,jdbcType=INTEGER}
+	</update>
+
+
+
+	<!-- 更新还款相关信息 add by zhishuo -->
+	<update id="updateBidDocumentByRepay" parameterType="map">
+		update BidDocument
+		<set>
+			<if test="newBid.remainPrincipal != null">
+				remain_principal = #{newBid.remainPrincipal,jdbcType=DECIMAL},
+			</if>
+			<if test="newBid.remainInterest != null">
+				remain_interest = #{newBid.remainInterest,jdbcType=DECIMAL},
+			</if>
+			<if test="newBid.issueDone != null">
+				issue_done = #{newBid.issueDone,jdbcType=INTEGER},
+			</if>
+			<if test="newBid.state != null">
+				state = #{newBid.state,jdbcType=INTEGER},
+			</if>
+			<if test="newBid.repurchaseState != null" >
+	        	repurchase_state = #{newBid.repurchaseState,jdbcType=TINYINT},
+	      	</if>
+		</set>
+		where bid_id = #{oldBid.bidId,jdbcType=INTEGER}
+		and remain_principal = #{oldBid.remainPrincipal,jdbcType=DECIMAL}
+		and issue_done = #{oldBid.issueDone,jdbcType=INTEGER}
+	</update>
+
+	<!-- 查询已过期未满标的标信息for流标 -->
+	<select id="selectBidListByStopBid" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from BidDocument
+		where state in (4,8)
+		and effect_time <![CDATA[<]]> now()
+		and (end_of_invest <![CDATA[<=]]> NOW() or is_quit = 1)
+		order by is_quit desc
+	</select>
+	<update id="updateBidDocumentForRepayReward" parameterType="map">
+	   update BidDocument
+		<set>
+			<if test="newBid.remainReward != null">
+				remain_reward = #{newBid.remainReward,jdbcType=DECIMAL},
+			</if>
+			<if test="newBid.remainPlusRate != null">
+				remain_plus_rate = #{newBid.remainPlusRate,jdbcType=DECIMAL},
+			</if>
+		</set>
+		where bid_id = #{oldBid.bidId,jdbcType=INTEGER}
+		and remain_reward = #{oldBid.remainReward,jdbcType=DECIMAL}
+	</update>
+
+	<select id="selectByActionSn" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		BidDocument.*
+		from BidDocument inner join Repayment on `BidDocument`.`bid_id` = `Repayment`.`bid_ID`
+		and `Repayment`.`action_sn` = #{actionSn,jdbcType=INTEGER}
+	</select>
+
+	<!-- 获取理财包内可用散标 -->
+	<select id="getPackageBid" resultType="map">
+		select bid_id,money,duration-if(issue_done is null,0,issue_done) as issue,bid_type_second, loan_time,rate from BidDocument
+			where for_package=1 and bid_from_type = 1 and state=3 and (select count(*) from finance_bid_join_type
+				where finance_bid_join_type.bid_id = BidDocument.bid_id and finance_bid_join_type.markdel=0)=0
+				AND (SELECT	count(*) FROM finance_reinvest_bid_joined as frbj	WHERE
+					frbj.bid_id = BidDocument.bid_id AND frbj.markdel = 0)=0
+		<if test="param!=null">
+		    <foreach collection="param"  item="item" index="key" separator=" or "  open = "and">
+			       (loan_time >= #{item.start,jdbcType=TIMESTAMP} and loan_time <![CDATA[<=]]> #{item.end,jdbcType=TIMESTAMP})
+		    </foreach>
+		</if>
+	</select>
+
+	<select id="getPackageBidJob" resultType="map">
+		select bid_id,contract_money as money,duration as issue,loan_time,real_rate as rate from BidDocument 
+			where for_package=1 and state=3 and (select count(*) from finance_bid_join_type  
+				where finance_bid_join_type.bid_id = BidDocument.bid_id and finance_bid_join_type.markdel=0)=0
+	</select>
+	<select id="getAllPackageBid" resultType="map">
+		select bid_id,quota from BidDocument where for_package=1 and state=0 group by bid_id
+	</select>
+
+	<select id="selectValidPackageBid" resultMap="BaseResultMap">
+		select bid_id,fn_contract_id from BidDocument where for_package=1 and state not in (6,11,12,13,14,40,50)
+	</select>
+
+	<!-- 获取所有正在转让的债权 -->
+	<select id="getPackageBidAsset" resultType="map">
+    SELECT
+        asset.bid_id,
+   		ROUND(sum(asset.`quota`/100/doc.`money`*doc.`remain_principal`),2) AS money,
+   		if(doc.`issue_done` is null or doc.`issue_done`=0,doc.`join_issue`,
+			doc.`duration`-doc.`issue_done`) AS issue,
+   		doc.loan_time,
+   		doc.join_issue ,
+   		doc.bid_type_second,
+   		doc.bid_from_type bid_from_type,
+   		'0' as transfer_type,
+   		GROUP_CONCAT(asset.`asset_id`) as asset_ids,
+        asset.fn_package_id as package_id
+    FROM
+    	Asset asset 
+	LEFT JOIN BidDocument doc on doc.bid_id = (
+		SELECT
+			bid_id
+		FROM
+			BidDocument
+		WHERE
+			bid_id = asset.bid_id
+		LIMIT 1
+	)
+	left JOIN finance_account finance_account on asset.fn_backend_id = finance_account.id
+	where 
+    	asset.state = 0
+	and asset.fn_is_package = 1
+	and asset.fn_package_id = #{packageId}
+	and finance_account.finance_account_type != 1
+	<if test="fnAccountIds != null and fnAccountIds.size>0">
+		and 
+		<foreach collection="fnAccountIds" item="item" open="asset.fn_backend_id not in(" close=")" separator=",">
+				#{item,jdbcType=INTEGER}
+		</foreach>
+	</if>
+	
+	and  (select count(*) from finance_bid_join_type fbjt where fbjt.asset_id = asset.asset_id and fbjt.markdel=0)=0
+	GROUP BY
+		asset.bid_id
+	ORDER BY
+    	finance_account.finance_account_type DESC
+	</select>
+	<!-- 查询未加入理财包 放置时间最久的标的 -->
+	<select id="getUnJoinedBidsForPackage" resultMap="BaseResultMap">
+ 	select 
+ 	apply_time
+ 	 from BidDocument order by apply_time limit 1
+	</select>
+	<update id="updateBidWithDto" parameterType="com.hexin.dto.BidDto">
+		UPDATE 
+		BidDocument AS bid
+		SET bid.state = #{bidDto.newBid.state,jdbcType=TINYINT},
+ 		bid.join_issue =#{bidDto.newBid.joinIssue,jdbcType=INTEGER},
+ 		bid.fn_join_state=#{bidDto.newBid.fnJoinState,jdbcType=INTEGER}
+		WHERE 
+		bid.bid_id=#{bidDto.oldBid.bidId,jdbcType=TINYINT}
+		AND bid.state=#{bidDto.oldBid.state,jdbcType=TINYINT}
+		AND bid.join_issue=#{bidDto.oldBid.joinIssue,jdbcType=INTEGER}
+		AND bid.fn_join_state=#{bidDto.oldBid.fnJoinState,jdbcType=INTEGER}
+	</update>
+	<select id="getUserWithRechargeAmountAndCardInfo" resultType="map">
+			select bid.user_id as userId,
+			sum(plan.principal + plan.interest)	as recharge_amount,
+			card.bank_type ,
+			card.card_number,
+			card.`owner` as card_owner_name,
+			bid.bid_type,
+			bid.bid_id,
+			bid.bid_name		
+			from Repayplan plan 
+			join BidDocument bid
+			join CashCard card 
+			join Account account
+			on account.user_id = bid.user_id
+			and card.user_id = bid.user_id
+			and plan.bid_id = bid.bid_id
+			and bid.state = 10
+			and plan.repayday = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL 1 DAY),'%Y-%m-%d')
+			and plan.state = 0
+			GROUP BY bid.bid_id;
+	</select>
+	<select id="getAudit2OkBidDocumentsWithTime" resultMap="BaseResultMap">
+	   SELECT
+	     <include refid="Base_Column_List"/>
+       FROM
+         BidDocument
+       WHERE
+	  	  DATE_FORMAT(transact_time,"%Y-%m-%d") =DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 day), "%Y-%m-%d")
+       AND state = 10
+       AND user_is_trustee = 1 and bid_from_type = 1
+	</select>
+	<select id="getValidBidocumentByUserId" resultType="int">
+	    select
+	       count(bid_id)
+	    from 
+	      BidDocument
+	    where 
+	      state in (1,2,4,5,7,8,3,10,18,16,17,9) 
+	      and is_quit = 0
+	      and user_id = #{user_id}
+	</select>
+	<select id="listPendingLoan" resultType="map" parameterType="map">
+		SELECT
+			`bid`.`user_id_num` AS `userId`,
+			`bid`.`user_name` AS `userName`,
+			`bid`.`confirm_time` AS `time`,
+			`bid`.`withdraw_service_fee_loan_money` AS `money`,
+			`card`.`bank_type` AS `bankType`,
+			`card`.`bank_name` AS `bankName`,
+			`card`.`card_number` AS `cardNo`,
+			`bid`.`bid_id` AS `bidId`,
+			`bid`.`is_quit` AS `isQuit`
+		FROM
+			`BidDocument` AS `bid`,
+			`CashCard` AS `card`
+		WHERE
+			`bid`.`user_id_num` = `card`.`user_id_num`
+			AND `bid`.`is_withdraw_service_fee_success` = 2
+			AND `card`.`is_bind` > 0
+			AND `bid`.`can_withdrawal_amount` > 0
+		<if test="userIds != null and userIds != ''">
+			AND `bid`.`user_id_num` IN (${userIds})
+		</if>
+		<if test="isQuit != null">
+			AND `bid`.`is_quit` = #{isQuit,jdbcType=TINYINT}
+		</if>
+		<if test="bidId != null">
+			AND `bid`.`bid_id` = #{bidId,jdbcType=INTEGER}
+		</if>
+		<if test="beginTime != null">
+			AND `bid`.`confirm_time` >= #{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			AND `bid`.`confirm_time` <![CDATA[<=]]> #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="start != null and end != null">
+			LIMIT #{start,jdbcType=INTEGER}, #{end,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="countPendingLoan" resultType="java.lang.Integer" parameterType="map">
+		SELECT
+			COUNT(1) AS `totalNum`
+		FROM
+			`BidDocument` AS `bid`,
+			`CashCard` AS `card`
+		WHERE
+			`bid`.`user_id_num` = `card`.`user_id_num`
+			AND `bid`.`is_withdraw_service_fee_success` = 2
+			AND `card`.`is_bind` > 0
+			AND `bid`.`can_withdrawal_amount` > 0
+		<if test="userIds != null and userIds != ''">
+			AND `bid`.`user_id_num` IN (${userIds})
+		</if>
+		<if test="isQuit != null">
+			AND `bid`.`is_quit` = #{isQuit,jdbcType=TINYINT}
+		</if>
+		<if test="bidId != null">
+			AND `bid`.`bid_id` = #{bidId,jdbcType=INTEGER}
+		</if>
+		<if test="beginTime != null">
+			AND `bid`.`confirm_time` >= #{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			AND `bid`.`confirm_time` <![CDATA[<=]]> #{endTime,jdbcType=TIMESTAMP}
+		</if>
+	</select>
+	<select id="selectBidByLoanCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT
+			<include refid="Base_Column_List"/>
+		FROM
+			BidDocument
+		WHERE
+			loan_code = #{loan_code,jdbcType=VARCHAR}
+	</select>
+    <select id="getLastValidLoanRecordByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from BidDocument
+        where user_id = #{user_id,jdbcType=VARCHAR}
+        and state = 10
+        order by bid_id desc limit 1
+    </select>
+
+    <update id="updateBidIsRepayYes" parameterType="java.util.List">
+        update BidDocument
+          SET is_repay =0
+        where
+        <foreach collection="list" item="item" index="index" separator="or"> bid_id= #{item}</foreach>
+    </update>
+
+    <update id="updateBidIsRepayNo" parameterType="java.util.List">
+        update BidDocument
+        SET is_repay =1
+        where
+        <foreach collection="list" item="item" index="index" separator="or"> bid_id= #{item}</foreach>
+    </update>
+
+    <select id="getBidDocumentForIsRepay" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from BidDocument
+        where is_repay=1
+    </select>
+
+    <select id="getCanWithdrawalAmount" resultType="DECIMAL" parameterType="java.lang.String">
+        SELECT SUM(`bid`.`can_withdrawal_amount`) AS `canWithdrawalAmountSum`
+        FROM `BidDocument` AS `bid`
+        WHERE `bid`.`user_id` = #{user_id,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="getBidWithSpRepayAuditing" resultMap="BaseResultMap">
+    	select 
+    	<include refid="Base_Column_List" />
+    	`BidDocument` AS `bid`
+    	where `bid`.`state` = 19
+    </select>
+
+    <select id="getValidBidocumentByUserIdForCash" resultMap="BaseResultMap">
+        select
+           <include refid="Base_Column_List"/>
+        from
+        BidDocument
+        where
+        state in (1,2,4,5,7,8,3,10,18,16,17)
+        and is_quit = 0
+        and user_id = #{user_id}
+    </select>
+    
+    <update id="updateIsWithDrawServiceFeeToSuccess">
+    	update BidDocument
+    	set is_withdraw_service_fee_success=2,
+    		withdraw_service_fee_loan_money=#{param.remianMoney,jdbcType=DECIMAL},
+    		confirm_time = now()
+    	where loan_code=#{param.loanCode,jdbcType=VARCHAR}
+    </update>
+    <update id="updateIsWithDrawServiceFeeToWaitDraw">
+        update BidDocument
+        set is_withdraw_service_fee_success=1
+        where loan_code=#{loanCode,jdbcType=VARCHAR}
+    </update>
+
+    <select id="superAccountBid" resultType="integer">
+       SELECT
+            asset.`bid_id`
+        FROM
+            `finance_account` fa,
+            Asset asset
+        JOIN `BidDocument` bid ON bid.`bid_id` = asset.`bid_id`
+        AND bid.`state` = 10
+        WHERE
+            fa.`finance_account_type` = 1
+        AND asset.`fn_backend_id` = fa.id
+        AND (
+            SELECT
+                count(*)
+            FROM
+                finance_bid_join_type fbjt
+            WHERE
+                fbjt.asset_id = asset.asset_id
+            AND fbjt.markdel = 0
+        ) = 0
+        AND asset.`state` = 0
+        GROUP BY
+            asset.bid_id
+        ORDER BY
+            asset.bid_id DESC
+    </select>
+    
+    <select id="getPendingBid" resultMap="BaseResultMap">
+    	select 
+    	<include refid="Base_Column_List"/> 
+    	from BidDocument where state = 3
+    </select>
+
+	<!-- 获取所有紧急退出的转让债权 -->
+	<select id="getPackageQuitBidAsset" resultType="map">
+	    SELECT
+	        asset.bid_id,
+	   		ROUND(sum(asset.`quota`/100/doc.`money`*doc.`remain_principal`),2) AS money,
+	   		if(doc.`issue_done` is null or doc.`issue_done`=0,doc.`join_issue`,
+				doc.`duration`-doc.`issue_done`) AS issue,
+	   		doc.loan_time,
+	   		doc.join_issue ,
+	   		doc.bid_type_second,
+	   		doc.bid_from_type bid_from_type,
+	   		'0' as transfer_type,
+	   		GROUP_CONCAT(asset.`asset_id`) as asset_ids,
+	        asset.fn_package_id as package_id,
+		    fuq.begin_assign_time
+	    FROM
+	    	Asset asset 
+		LEFT JOIN BidDocument doc on doc.bid_id = (
+			SELECT
+				bid_id
+			FROM
+				BidDocument
+			WHERE
+				bid_id = asset.bid_id
+			LIMIT 1
+		)
+		left JOIN finance_account finance_account on asset.fn_backend_id = finance_account.id
+		LEFT JOIN finance_urgent_quit fuq on fuq.finance_account_id=asset.fn_backend_id and fuq.quit_state!=0
+		where 
+	    	asset.state = 0
+		and asset.fn_is_package = 1
+		<if test="financeBackendIds!=null and financeBackendIds.size!=0"> 
+			and 
+			<foreach collection="financeBackendIds" item="item" open="asset.fn_backend_id in(" close=")" separator=",">
+									#{item,jdbcType=INTEGER}
+			</foreach>
+		</if>
+		and finance_account.finance_account_type != 1
+		and (select count(*) from finance_bid_join_type fbjt where fbjt.asset_id = asset.asset_id and fbjt.markdel=0)=0
+		GROUP BY
+			asset.bid_id
+		ORDER BY
+	    	finance_account.finance_account_type DESC
+	</select>
+
+	<select id="getBidByList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"/> 
+		from  BidDocument
+		where bid_id
+		<foreach collection="list" item="item" open="in(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+			
+	<select id="searchBidByAuditingCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select 
+		<include refid="Base_Column_List"/>
+		from BidDocument
+		where auditing_code = #{auditing_code,jdbcType=VARCHAR}  or apply_num=#{auditing_code,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>
